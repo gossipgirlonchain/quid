@@ -1,0 +1,5 @@
+# Odra's proc-macros use #![feature(box_patterns)], which requires nightly.
+# Pinned to match odradev/odra's own rust-toolchain at the 2.7.x line.
+[toolchain]
+channel = "nightly-2026-01-01"
+targets = ["wasm32-unknown-unknown"]

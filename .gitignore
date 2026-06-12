@@ -1,0 +1,26 @@
+# node
+node_modules
+node_modules.nosync/
+dist/
+.env
+.env.*
+!.env.example
+
+# rust / odra (target is a *.nosync symlink locally — see the checklist's environment note)
+target
+target.nosync/
+*.nosync
+Cargo.lock
+*.wasm
+
+# keys, never commit
+keys/
+*.pem
+
+# vercel
+.vercel
+.claude/
+
+# os
+.DS_Store
+*.log

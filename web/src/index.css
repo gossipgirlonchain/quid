@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* Design tokens (neobrutalism) — palette: navy / pink / indigo.
+   Pairing rules (WCAG AA):
+   - quid (pink #FF70B7) fills always carry ink text (7.3:1). Never pink text
+     on light surfaces (2.5:1) — use quid-deep (#C81E78, 4.75:1+) instead.
+   - coral is the alert role, now solid navy: always white text (16.5:1).
+   - sun is the working/highlight role, now indigo: always white text (6.2:1).
+   - muted (indigo) is for secondary text on paper/white only (5.5:1+). */
+@theme {
+  --color-paper: #f1f2f2;
+  --color-ink: #070e36;
+  --color-quid: #ff70b7;
+  --color-quid-deep: #c81e78;
+  --color-coral: #070e36;
+  --color-sun: #545d93;
+  --color-sky: #545d93;
+  --color-surface: #ffffff;
+  --color-muted: #545d93;
+
+  --font-disp: "Unbounded", sans-serif;
+  --font-body: "Hanken Grotesk", sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  /* Solid offset shadows, zero blur — the brutalist "push" surfaces. */
+  --shadow-brutal: 6px 6px 0 #070e36;
+  --shadow-brutal-sm: 4px 4px 0 #070e36;
+  --shadow-brutal-lg: 10px 10px 0 #070e36;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Money + any updating number: tabular figures to stop layout shift. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Keyframes — referenced via Tailwind's animate-[name_…] arbitrary utilities. */
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes pulse-ring {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+/* In-progress step chip: indigo with white text, pulsing to ink so the
+   white numeral stays readable in both states. */
+@keyframes step-blink {
+  50% { background: var(--color-ink); }
+}
+
+/* Neobrutalist range slider — mirrors the mockup's .cap control. */
+.quid-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.quid-slider::-webkit-slider-runnable-track {
+  height: 16px;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-surface);
+}
+.quid-slider::-moz-range-track {
+  height: 16px;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-surface);
+}
+.quid-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 30px;
+  width: 30px;
+  margin-top: -10px;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-quid);
+  box-shadow: var(--shadow-brutal-sm);
+}
+.quid-slider::-moz-range-thumb {
+  height: 28px;
+  width: 28px;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-quid);
+  box-shadow: var(--shadow-brutal-sm);
+}
+.quid-slider:focus {
+  outline: none;
+}
+.quid-slider:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

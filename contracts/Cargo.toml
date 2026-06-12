@@ -1,0 +1,60 @@
+[package]
+name = "quid_contracts"
+version = "0.1.0"
+edition = "2021"
+description = "Quid advance pool + reputation contract for Casper (Odra)"
+
+# Pinned to Odra 2.7.x. Odra's proc-macros require nightly (see rust-toolchain.toml,
+# nightly-2026-01-01, matching odradev/odra @ 2.7.0). Build/test with cargo-odra:
+# `cargo install cargo-odra`, then `cargo odra build` / `cargo odra test`.
+[dependencies]
+odra = { version = "~2.7", default-features = false }
+odra-modules = { version = "~2.7", default-features = false }
+# Host-only RPC client for deploying to a live network (Testnet). Enabled by the
+# `livenet` feature; never pulled into the wasm build. See bin/livenet.rs + DEPLOY.md.
+odra-casper-livenet-env = { version = "~2.7", optional = true }
+
+[features]
+livenet = ["odra-casper-livenet-env"]
+
+[dev-dependencies]
+odra-test = "~2.7"
+
+[build-dependencies]
+odra-build = "~2.7"
+
+# odra-build is also a (non-wasm) dependency, used by the build_schema binary.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+odra-build = "~2.7"
+
+# Odra builds the wasm from this binary (its build model), not from a cdylib lib.
+[[bin]]
+name = "quid_contracts_build_contract"
+path = "bin/build_contract.rs"
+test = false
+
+[[bin]]
+name = "quid_contracts_build_schema"
+path = "bin/build_schema.rs"
+test = false
+
+# Deploy QuidPool to a live network. Built only with `--features livenet`.
+[[bin]]
+name = "quid_contracts_livenet"
+path = "bin/livenet.rs"
+required-features = ["livenet"]
+test = false
+
+# Deploy a test CEP-18 stablecoin (when no Testnet dUSDC is at hand). See DEPLOY.md.
+[[bin]]
+name = "quid_contracts_livenet_cep18"
+path = "bin/livenet_cep18.rs"
+required-features = ["livenet"]
+test = false
+
+[profile.release]
+codegen-units = 1
+lto = true
+
+[profile.dev.package."*"]
+opt-level = 3
