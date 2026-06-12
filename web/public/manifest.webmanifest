@@ -4,7 +4,7 @@
   "description": "Money before payday, handled for you.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#10163A",
+  "background_color": "#FFFFFF",
   "theme_color": "#FF70B7",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
