@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { post } from "./api";
+import { post, storePlaidToken } from "./api";
 
 /**
  * Auth via CSPR.click (social login + silent self-custodial Casper wallet).
@@ -49,7 +49,10 @@ export function usePlaidConnect(onDone: () => void) {
   const { open, ready } = usePlaidLink({
     token,
     onSuccess: (publicToken: string) => {
-      post("/plaid/exchange", { public_token: publicToken })
+      post<{ access_token?: string }>("/plaid/exchange", { public_token: publicToken })
+        .then((r) => {
+          if (r.access_token) storePlaidToken(r.access_token); // feeds the Activity screen
+        })
         .catch(() => {})
         .finally(onDone);
     },

@@ -16,6 +16,17 @@ export type Screen =
   | "profile";
 
 export const ONBOARDING: Screen[] = ["welcome", "login", "connect", "setborrow"];
+
+const ALL_SCREENS: Screen[] = [
+  "welcome", "login", "connect", "setborrow", "home", "heads", "work",
+  "active", "settled", "autocover", "declined", "activity", "profile",
+];
+
+/** Demo deep-links: /?screen=activity jumps straight to a screen. */
+function initialScreen(): Screen {
+  const q = new URLSearchParams(window.location.search).get("screen");
+  return ALL_SCREENS.includes(q as Screen) ? (q as Screen) : "welcome";
+}
 /** Screens reachable from the bottom nav, mapped to their tab. */
 export const NAV_TABS: { id: Screen; label: string }[] = [
   { id: "home", label: "Home" },
@@ -86,7 +97,7 @@ export function useQuid(): QuidState {
 }
 
 export function QuidProvider({ children }: { children: ReactNode }) {
-  const [screen, setScreen] = useState<Screen>("welcome");
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [auto, setAuto] = useState(true);
   const [cap, setCap] = useState(200);
   const [borrow, setBorrow] = useState(50);

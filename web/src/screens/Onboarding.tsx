@@ -1,5 +1,5 @@
 import { ScreenShell } from "../components/Shell";
-import { Avatar, Button, Card, Divider, H1, Hint, Kicker, Money, Row, Tag } from "../components/ui";
+import { Button, Card, Divider, H1, Hint, Kicker, Logo, Money, Row, Tag } from "../components/ui";
 import { Slider } from "../components/Slider";
 import { cn } from "../lib/cn";
 import { useQuid, planForAmount, PLAN_CAP, PLAN_LABEL, PLAN_PRICE } from "../state";
@@ -10,7 +10,7 @@ export function Welcome() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col justify-center gap-[18px] text-center">
-        <Avatar size={64} className="mx-auto rounded-[18px]" />
+        <Logo size={64} className="mx-auto rounded-[18px]" />
         <H1>Money before payday, handled for you.</H1>
         <p className="text-pretty text-[16px] leading-[1.45]">
           Quid watches your cash flow and quietly covers you when you're short, then pays itself back the moment

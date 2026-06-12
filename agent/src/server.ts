@@ -109,8 +109,40 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       const body = await readJson(req);
       const client = await plaidClient();
       const r = await client.itemPublicTokenExchange({ public_token: String(body.public_token ?? "") });
-      // TODO: persist r.data.access_token against the user; the agent reads it for cashflow/income.
-      sendJson(res, 200, { ok: true, item_id: r.data.item_id });
+      // Sandbox-only convenience: hand the token to the client so the Activity feed
+      // can read this item. In production, persist server-side against the user instead.
+      sendJson(res, 200, { ok: true, item_id: r.data.item_id, access_token: r.data.access_token });
+      return;
+    }
+
+    // --- Plaid: real transactions for the Activity feed (/transactions/sync) ---
+    if (method === "POST" && url === "/api/plaid/transactions") {
+      const body = await readJson(req);
+      const accessToken = String(body.access_token ?? "") || process.env.PLAID_ACCESS_TOKEN || "";
+      if (!havePlaid || !accessToken) {
+        sendJson(res, 200, { transactions: null, mock: true });
+        return;
+      }
+      const client = await plaidClient();
+      const added = [];
+      let cursor: string | undefined;
+      for (let page = 0; page < 8; page++) {
+        const r = await client.transactionsSync({ access_token: accessToken, cursor, count: 250 });
+        added.push(...(r.data.added ?? []));
+        cursor = r.data.next_cursor;
+        if (!r.data.has_more) break;
+      }
+      const transactions = added
+        .map((t) => ({
+          id: t.transaction_id,
+          name: t.merchant_name || t.name || "Transaction",
+          amountUsd: -t.amount, // Plaid: positive = debit; UI: debits negative, credits positive
+          date: t.authorized_date || t.date,
+          pending: Boolean(t.pending),
+        }))
+        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+        .slice(0, 30);
+      sendJson(res, 200, { transactions });
       return;
     }
 

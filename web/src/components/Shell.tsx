@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { cn } from "../lib/cn";
 import { useQuid, NAV_TABS } from "../state";
-import { Avatar, Button, Row } from "./ui";
+import { Button, Logo, Row } from "./ui";
 
 /** Textured backdrop + the phone frame (full-screen on small viewports). */
 export function PhoneShell({ children }: { children: ReactNode }) {
@@ -37,7 +37,7 @@ export function AppBar() {
   const { go, score } = useQuid();
   return (
     <div className="z-30 flex items-center justify-between border-b-[3px] border-ink bg-paper px-[18px] pb-3 pt-1.5">
-      <span className="font-disp text-[23px] font-extrabold tracking-[-0.02em]">Quid</span>
+      <Logo size={34} />
       <button
         onClick={() => go("profile")}
         className="inline-flex items-center gap-[7px] rounded-full border-[3px] border-ink bg-quid px-[13px] py-[5px] font-mono text-[13px] font-bold shadow-brutal-sm transition-[transform,box-shadow] duration-100 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
@@ -87,7 +87,7 @@ export function PushBanner() {
       onClick={tapPush}
       className="absolute inset-x-3 top-[48px] z-[60] flex items-start gap-[11px] rounded-2xl border-[3px] border-ink bg-surface p-3 text-left shadow-brutal animate-[push-in_0.3s_ease-out]"
     >
-      <Avatar size={34} />
+      <Logo size={34} />
       <div className="flex-1">
         <Row className="mb-0.5">
           <span className="text-[13px] font-bold">Quid</span>
@@ -105,7 +105,7 @@ export function InstallBanner() {
   return (
     <div className="absolute inset-x-3 bottom-[84px] z-[55] flex items-center justify-between gap-2.5 rounded-2xl border-[3px] border-ink bg-ink p-3 text-white shadow-brutal">
       <div className="flex items-center gap-2.5">
-        <Avatar size={30} />
+        <Logo size={30} />
         <div className="text-[13px] font-semibold">Add Quid to your home screen</div>
       </div>
       <div className="flex gap-1.5">
