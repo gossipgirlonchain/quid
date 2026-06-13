@@ -3,6 +3,7 @@ import { ScreenShell } from "../components/Shell";
 import { Avatar, Card, Divider, H1, Kicker, Money, Row, Tag, Toggle } from "../components/ui";
 import { cn } from "../lib/cn";
 import { useQuid } from "../state";
+import { openOnRamp } from "../lib/ramps";
 
 function SetRow({
   label,
@@ -125,7 +126,9 @@ export function Profile() {
       <Card className="overflow-hidden p-0">
         <SetRow label="Bank" sub="Monzo · current account" right={<Tag tone="g" className="text-[10px]">CONNECTED</Tag>} />
         <Divider className="my-0" />
-        <SetRow label="Casper wallet" sub="0x7a3f…c91" right={chev} onClick={() => {}} />
+        <SetRow label="Casper wallet" sub="01dc…7edd" right={chev} onClick={() => {}} />
+        <Divider className="my-0" />
+        <SetRow label="Add funds" sub="Buy CSPR with a card · Ramp" right={chev} onClick={() => openOnRamp()} />
       </Card>
 
       <Card className="overflow-hidden p-0">

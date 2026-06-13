@@ -127,8 +127,10 @@ export function Active() {
         ● ADVANCE ACTIVE
       </Tag>
       <Card>
-        <AgentLine kicker="Done">Sent. $180 is in your account. I'll pay myself back on the 30th.</AgentLine>
-        <Money className="mb-0.5 mt-3.5">$180.00</Money>
+        <AgentLine kicker="Done">
+          Your advance is ready in your Quid wallet. Cash it out to your bank whenever — I'll repay myself on the 30th.
+        </AgentLine>
+        <Money className="mb-0.5 mt-3.5">${(latest?.amountUsd ?? 180).toFixed(2)}</Money>
         <Row className="mt-2">
           <span className="text-muted">Repay</span>
           <span className="font-mono">30 Jun · auto</span>
@@ -148,10 +150,13 @@ export function Active() {
           )}
         </Row>
       </Card>
-      <Button variant="primary" onClick={() => go("settled")}>
+      <Button variant="primary" onClick={() => go("cashout")}>
+        Cash out to bank →
+      </Button>
+      <Button variant="ghost" onClick={() => go("settled")}>
         ▶ Simulate: wages land
       </Button>
-      <Hint>Fast-forward to repayment</Hint>
+      <Hint>Cash out to your bank, or fast-forward to repayment.</Hint>
     </ScreenShell>
   );
 }

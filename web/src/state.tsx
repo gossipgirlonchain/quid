@@ -12,6 +12,7 @@ export type Screen =
   | "settled"
   | "autocover"
   | "declined"
+  | "cashout"
   | "activity"
   | "profile";
 
@@ -19,7 +20,7 @@ export const ONBOARDING: Screen[] = ["welcome", "login", "connect", "setborrow"]
 
 const ALL_SCREENS: Screen[] = [
   "welcome", "login", "connect", "setborrow", "home", "heads", "work",
-  "active", "settled", "autocover", "declined", "activity", "profile",
+  "active", "settled", "autocover", "declined", "cashout", "activity", "profile",
 ];
 
 /** Demo deep-links: /?screen=activity jumps straight to a screen. */

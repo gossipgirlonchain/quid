@@ -191,6 +191,24 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return;
     }
 
+    // --- Off-ramp: cash a Casper advance out to the linked bank (scaffold) ---
+    if (method === "POST" && url === "/api/offramp/payout") {
+      const body = await readJson(req);
+      const amountUsd = Number(body.amountUsd ?? 0);
+      if (!Number.isFinite(amountUsd) || amountUsd <= 0) {
+        sendJson(res, 400, { error: "invalid_amount" });
+        return;
+      }
+      const provider = process.env.OFFRAMP_PROVIDER;
+      if (!provider) {
+        sendJson(res, 200, { status: "processing", etaBusinessDays: 2, mock: true });
+        return;
+      }
+      // TODO(live): convert pool dUSDC -> USD and ACH-payout to the linked bank.
+      sendJson(res, 501, { error: "offramp_provider_not_implemented", provider });
+      return;
+    }
+
     // --- Stripe: a Checkout session for the chosen tier (the $50 paywall) ---
     if (method === "POST" && url === "/api/stripe/checkout") {
       const body = await readJson(req);
