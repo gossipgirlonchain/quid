@@ -103,6 +103,10 @@ The MVP that *qualifies* is milestones 1, 2, and 3 (a real Testnet transaction f
 - `plaid.ts` and `casper.ts` are **live implementations**; `x402.ts` still stubs `signX402Payment` (milestone 6).
 - **Deployed & seeded on Casper Testnet (2026-06-12).** QuidPool `hash-ccdd94c7…ce34` + test dUSDC `hash-8665867c…1e89`, pool holds $10,000, all four install/seed transactions verifiable on cspr.live (links in milestones 1 and 3). `agent/.env` is fully wired — the agent is out of SIM. Advance ids are read from the `AdvanceIssued` event (verified live), the demo borrower holds a $5k standing allowance, and `npm run demo` runs the full lifecycle hands-free. The only thing the live loop still needs: Plaid Sandbox keys in `.env`, then `npm run plaid:sandbox` → `npm run dev`.
 
+### Post-hackathon TODO (deferred 2026-06-12)
+
+- **Harden Supabase RLS.** The `profiles` table (Supabase project `quid` / `wtehcopktelnnpeyticf`) has permissive `WITH CHECK (true)` INSERT/UPDATE policies — flagged by the security advisor. Code already prefers `SUPABASE_SERVICE_KEY` over the anon key server-side, so the fix is: (1) add the `service_role` secret as `SUPABASE_SERVICE_KEY` (Vercel `quid` project + `agent/.env`), (2) run a migration dropping the anon write policies so the table is server-only. Low risk today (key is server-side only, sandbox Plaid tokens), but do before real bank data.
+
 ### Environment gotcha (read if builds hang)
 
 This repo lives under `~/Documents`, which iCloud syncs — it was **evicting file contents** from `node_modules`/`target`, making npm/tsc/cargo hang at 0% CPU. Fix in place: `node_modules` and `contracts/target` are now symlinks to `*.nosync` dirs, which iCloud ignores. **npm install replaces the symlink with a real dir** — if installs/builds ever hang again, re-apply:
