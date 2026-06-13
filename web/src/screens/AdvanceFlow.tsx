@@ -3,6 +3,7 @@ import { animate } from "motion/react";
 import { ScreenShell } from "../components/Shell";
 import { AgentLine, Button, Card, Divider, Hint, Money, Row, Tag } from "../components/ui";
 import { cn } from "../lib/cn";
+import { useLatestAdvance } from "../lib/integrations";
 import { useQuid } from "../state";
 
 export function Heads() {
@@ -50,6 +51,7 @@ const WORK_STEPS = [
 
 export function Work() {
   const { go } = useQuid();
+  const latest = useLatestAdvance();
   const [step, setStep] = useState(-1); // index of the in-progress step; > 2 = all done
   const [tx, setTx] = useState(false);
 
@@ -102,7 +104,14 @@ export function Work() {
         })}
         <Divider />
         <div className="font-mono text-[11px]">
-          tx: {tx ? <span className="underline">0x7a3f…c91 ↗</span> : <span className="text-muted">pending…</span>}
+          on-chain:{" "}
+          {tx && latest ? (
+            <a href={latest.explorer} target="_blank" rel="noreferrer" className="underline">
+              advance #{latest.id} · QuidPool ↗
+            </a>
+          ) : (
+            <span className="text-muted">pending…</span>
+          )}
         </div>
       </Card>
     </ScreenShell>
@@ -111,6 +120,7 @@ export function Work() {
 
 export function Active() {
   const { go } = useQuid();
+  const latest = useLatestAdvance();
   return (
     <ScreenShell>
       <Tag tone="g" className="mt-0.5 self-start">
@@ -129,7 +139,13 @@ export function Active() {
         </Row>
         <Row className="pt-1.5">
           <span className="text-muted">On-chain</span>
-          <span className="font-mono text-[12px] underline">0x7a3f…c91 ↗</span>
+          {latest ? (
+            <a href={latest.explorer} target="_blank" rel="noreferrer" className="font-mono text-[12px] underline">
+              advance #{latest.id} ↗
+            </a>
+          ) : (
+            <span className="font-mono text-[12px] text-muted">syncing…</span>
+          )}
         </Row>
       </Card>
       <Button variant="primary" onClick={() => go("settled")}>

@@ -8,8 +8,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const r = await plaidClient().itemPublicTokenExchange({
       public_token: String(req.body?.public_token ?? ""),
     });
-    // Sandbox-only convenience: hand the token to the client so the Activity feed
-    // can read this item. In production, persist server-side against the user instead.
+    // Persist the token against the user's profile when Supabase is configured.
+    const userId = String(req.body?.userId ?? "");
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_ANON_KEY;
+    if (userId && userId !== "demo" && url && key) {
+      await fetch(`${url}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`, {
+        method: "PATCH",
+        headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ plaid_access_token: r.data.access_token }),
+      }).catch(() => {});
+    }
     res.status(200).json({ ok: true, item_id: r.data.item_id, access_token: r.data.access_token });
   } catch (err) {
     console.error("[plaid/exchange]", err);

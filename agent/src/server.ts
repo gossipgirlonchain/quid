@@ -7,6 +7,7 @@
 
 import "dotenv/config";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { contractExplorerUrl, fetchPoolEvents } from "../../api/_casper.js";
 
 const PORT = Number(process.env.SERVER_PORT) || 8787;
 const WEB_ORIGIN = process.env.WEB_ORIGIN || "http://localhost:5173";
@@ -143,6 +144,50 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
         .slice(0, 30);
       sendJson(res, 200, { transactions });
+      return;
+    }
+
+    // --- Casper: the app's Activity feed = real QuidPool lending events ---
+    if (url === "/api/casper/activity") {
+      const events = await fetchPoolEvents();
+      sendJson(res, 200, { events: [...events].reverse(), explorer: contractExplorerUrl });
+      return;
+    }
+
+    // --- Users: signup / login-by-username via Supabase (PostgREST) ---
+    if (method === "POST" && url === "/api/users") {
+      const body = await readJson(req);
+      const username = String(body.username ?? "").trim();
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+        sendJson(res, 400, { error: "invalid_username", hint: "3-20 chars, letters/numbers/_" });
+        return;
+      }
+      const sbUrl = process.env.SUPABASE_URL;
+      const sbKey = process.env.SUPABASE_ANON_KEY;
+      if (!sbUrl || !sbKey) {
+        sendJson(res, 200, { user: { id: "demo", username, tier: "plus" }, mock: true });
+        return;
+      }
+      const r = await fetch(
+        `${sbUrl}/rest/v1/profiles?on_conflict=username&select=id,username,tier,casper_public_key,created_at`,
+        {
+          method: "POST",
+          headers: {
+            apikey: sbKey,
+            Authorization: `Bearer ${sbKey}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates,return=representation",
+          },
+          body: JSON.stringify([{ username, email: String(body.email ?? "") || null }]),
+        },
+      );
+      if (!r.ok) {
+        console.error("[users] supabase", r.status, await r.text());
+        sendJson(res, 500, { error: "server_error" });
+        return;
+      }
+      const rows = (await r.json()) as unknown[];
+      sendJson(res, 200, { user: rows[0] });
       return;
     }
 

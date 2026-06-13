@@ -11,18 +11,51 @@ export async function post<T>(path: string, body?: unknown): Promise<T> {
   return (await res.json()) as T;
 }
 
-/** A row in the Activity feed: real bank transaction via Plaid /transactions/sync. */
-export interface Txn {
-  id: string;
-  name: string;
-  /** Debits negative, credits positive. */
-  amountUsd: number;
-  /** ISO date (YYYY-MM-DD). */
-  date: string;
-  pending: boolean;
+/** A row in the Activity feed: a real QuidPool lending event on Casper Testnet. */
+export interface PoolEvent {
+  /** Position in the contract's event log (chronological). */
+  index: number;
+  kind: "issued" | "repaid";
+  /** Advance id. */
+  id: number;
+  amountUsd?: number;
+  newReputation?: number;
+}
+
+/** Quid's on-chain lending activity, newest first, plus the cspr.live explorer link. */
+export async function fetchPoolActivity(): Promise<{ events: PoolEvent[]; explorer: string }> {
+  return post<{ events: PoolEvent[]; explorer: string }>("/casper/activity");
 }
 
 const PLAID_TOKEN_KEY = "quid.plaid_token";
+const USER_KEY = "quid.user";
+
+export interface QuidUser {
+  id: string;
+  username: string;
+  tier?: string;
+  casper_public_key?: string | null;
+}
+
+/** Create or fetch the profile for a username (Supabase-backed). */
+export async function signUp(username: string, email?: string): Promise<QuidUser> {
+  const r = await post<{ user: QuidUser }>("/users", { username, email });
+  try {
+    localStorage.setItem(USER_KEY, JSON.stringify(r.user));
+  } catch {
+    /* ignore */
+  }
+  return r.user;
+}
+
+export function currentUser(): QuidUser | null {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? (JSON.parse(raw) as QuidUser) : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Remember the user's connected bank item (sandbox-only convenience). */
 export function storePlaidToken(token: string): void {
@@ -31,23 +64,4 @@ export function storePlaidToken(token: string): void {
   } catch {
     /* private mode etc. — the env-token fallback still works */
   }
-}
-
-/**
- * Fetch real transactions, newest first. Uses the bank the user connected via
- * Link when available; the backend falls back to its demo sandbox item.
- * Returns null when Plaid isn't configured anywhere (true empty state).
- */
-export async function fetchTransactions(): Promise<Txn[] | null> {
-  let stored: string | null = null;
-  try {
-    stored = localStorage.getItem(PLAID_TOKEN_KEY);
-  } catch {
-    /* ignore */
-  }
-  const r = await post<{ transactions: Txn[] | null }>(
-    "/plaid/transactions",
-    stored ? { access_token: stored } : {},
-  );
-  return r.transactions;
 }

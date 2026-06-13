@@ -1,39 +1,45 @@
 import { useCallback, useEffect, useState } from "react";
 import { ScreenShell } from "../components/Shell";
 import { Button, Card, H1, Row, Tag } from "../components/ui";
-import { fetchTransactions, type Txn } from "../lib/api";
+import { fetchPoolActivity, type PoolEvent } from "../lib/api";
 
 const REFRESH_MS = 30_000;
 
-/** "2026-06-12" -> "12 Jun" */
-function shortDate(iso: string): string {
-  const d = new Date(`${iso}T00:00:00`);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-}
+const usd = (n?: number) => (n === undefined ? "" : `$${n.toFixed(2)}`);
 
-function Amount({ usd }: { usd: number }) {
-  const credit = usd > 0;
-  const txt = `${credit ? "+" : "−"}$${Math.abs(usd).toFixed(2)}`;
-  return <span className={`tabular font-mono font-bold ${credit ? "text-quid-deep" : ""}`}>{txt}</span>;
+function EventRow({ e }: { e: PoolEvent }) {
+  const issued = e.kind === "issued";
+  return (
+    <Row className="px-4 py-3.5">
+      <div className="min-w-0">
+        <b className="block">{issued ? `Advance #${e.id} issued` : `Advance #${e.id} repaid`}</b>
+        <div className="font-mono text-[11px] text-muted">
+          {issued ? "QuidPool → your wallet · Casper Testnet" : `auto-repaid · Quid score → ${e.newReputation}`}
+        </div>
+      </div>
+      <span className={`tabular font-mono font-bold ${issued ? "" : "text-quid-deep"}`}>
+        {issued ? `+${usd(e.amountUsd)}` : `−${usd(e.amountUsd)}`}
+      </span>
+    </Row>
+  );
 }
 
 export function Activity() {
-  const [txns, setTxns] = useState<Txn[] | null | undefined>(undefined); // undefined = loading
+  const [events, setEvents] = useState<PoolEvent[] | undefined>(undefined); // undefined = loading
+  const [explorer, setExplorer] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
   const refresh = useCallback(() => {
-    fetchTransactions()
-      .then((t) => {
-        setTxns(t);
+    fetchPoolActivity()
+      .then((r) => {
+        setEvents(r.events);
+        setExplorer(r.explorer);
         setError(false);
       })
       .catch(() => setError(true));
   }, []);
 
-  // Live data: load on mount, then poll so freshly-synced transactions appear
-  // without an app restart.
+  // Live chain data: load on mount, then poll so fresh advances appear on their own.
   useEffect(() => {
     refresh();
     const t = setInterval(refresh, REFRESH_MS);
@@ -44,55 +50,53 @@ export function Activity() {
     <ScreenShell>
       <Row className="mt-1.5">
         <H1>Activity</H1>
-        <Button sm className="w-auto px-3" onClick={refresh} aria-label="Refresh transactions">
+        <Button sm className="w-auto px-3" onClick={refresh} aria-label="Refresh activity">
           ↻
         </Button>
       </Row>
-      <p className="-mt-1 text-muted">Your real transactions, straight from your bank.</p>
+      <p className="-mt-1 text-muted">Everything Quid did for you, on the record — on-chain.</p>
 
       {error && (
         <Card flat className="border-dashed text-center text-[14px]">
-          Couldn't reach the bank feed. <button className="font-bold underline" onClick={refresh}>Retry</button>
+          Couldn't reach the chain. <button className="font-bold underline" onClick={refresh}>Retry</button>
         </Card>
       )}
 
-      {txns === undefined && !error && (
+      {events === undefined && !error && (
         <Card flat className="border-dashed text-center font-mono text-[12px] text-muted">
-          Loading transactions…
+          Reading the QuidPool contract…
         </Card>
       )}
 
-      {(txns === null || txns?.length === 0) && !error && (
+      {events?.length === 0 && !error && (
         <Card flat className="border-dashed text-center">
-          <p className="font-semibold">No transactions yet</p>
+          <p className="font-semibold">No advances yet</p>
           <p className="mt-1 text-[13px] text-muted">
-            Connect your bank in onboarding and your activity shows up here as it syncs.
+            When Quid covers you, every issue and repayment lands here with its on-chain receipt.
           </p>
         </Card>
       )}
 
-      {!!txns?.length && (
+      {!!events?.length && (
         <Card className="overflow-hidden p-0">
-          {txns.map((t, i) => (
-            <div key={t.id}>
+          {events.map((e, i) => (
+            <div key={e.index}>
               {i > 0 && <div className="h-[2px] bg-ink/15" />}
-              <Row className="px-4 py-3.5">
-                <div className="min-w-0">
-                  <b className="block truncate">{t.name}</b>
-                  <div className="font-mono text-[11px] text-muted">
-                    {shortDate(t.date)}
-                    {t.pending && (
-                      <Tag tone="s" className="ml-2 px-1.5 py-0 text-[9px]">
-                        PENDING
-                      </Tag>
-                    )}
-                  </div>
-                </div>
-                <Amount usd={t.amountUsd} />
-              </Row>
+              <EventRow e={e} />
             </div>
           ))}
         </Card>
+      )}
+
+      {explorer && (
+        <a
+          href={explorer}
+          target="_blank"
+          rel="noreferrer"
+          className="text-center font-mono text-[11px] text-muted underline"
+        >
+          Verify on cspr.live <Tag className="ml-1 px-1.5 py-0 text-[9px]">TESTNET</Tag>
+        </a>
       )}
     </ScreenShell>
   );

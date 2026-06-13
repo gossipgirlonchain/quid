@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { ScreenShell } from "../components/Shell";
 import { Button, Card, Divider, H1, Hint, Kicker, Logo, Money, Row, Tag } from "../components/ui";
 import { Slider } from "../components/Slider";
 import { cn } from "../lib/cn";
 import { useQuid, planForAmount, PLAN_CAP, PLAN_LABEL, PLAN_PRICE } from "../state";
 import { useAuth, usePlaidConnect, startCheckout } from "../lib/integrations";
+import { signUp } from "../lib/api";
 
 export function Welcome() {
   const { go } = useQuid();
@@ -30,19 +32,55 @@ export function Welcome() {
 export function Login() {
   const { go } = useQuid();
   const { login } = useAuth();
-  const onLogin = (p: "apple" | "google" | "email") => login(p).finally(() => go("connect"));
+  const [username, setUsername] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const valid = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+
+  const onLogin = async (p: "apple" | "google" | "email") => {
+    if (!valid || busy) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      await signUp(username); // creates / fetches the profile row in the users DB
+      await login(p);
+      go("connect");
+    } catch {
+      setErr("Couldn't claim that username — try another.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col justify-center gap-[14px] text-center">
         <Kicker>Step 1 of 3</Kicker>
         <H1 className="text-[23px]">Create your account</H1>
         <p className="text-pretty leading-[1.45]">
-          No seed phrases, no wallet setup. Sign in and Quid creates a secure Casper wallet for you behind the scenes.
+          No seed phrases, no wallet setup. Pick a username, sign in, and Quid creates a secure Casper wallet for you
+          behind the scenes.
         </p>
-        <div className="h-1.5" />
-        <Button onClick={() => onLogin("apple")}> Continue with Apple</Button>
-        <Button onClick={() => onLogin("google")}> Continue with Google</Button>
-        <Button variant="ghost" onClick={() => onLogin("email")}>
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value.trim())}
+          placeholder="@username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          className="min-h-12 rounded-xl border-[3px] border-ink bg-surface px-4 py-3 text-center font-mono text-[15px] font-bold shadow-brutal-sm outline-none placeholder:font-normal placeholder:text-muted focus-visible:ring-[3px] focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+        />
+        {err && <p className="font-mono text-[11px] text-coral">{err}</p>}
+        {!err && username.length > 0 && !valid && (
+          <p className="font-mono text-[11px] text-muted">3–20 chars · letters, numbers, _</p>
+        )}
+        <Button onClick={() => onLogin("apple")} disabled={!valid || busy}>
+          {busy ? "Creating account…" : " Continue with Apple"}
+        </Button>
+        <Button onClick={() => onLogin("google")} disabled={!valid || busy}>
+           Continue with Google
+        </Button>
+        <Button variant="ghost" onClick={() => onLogin("email")} disabled={!valid || busy}>
           Use email instead
         </Button>
       </div>

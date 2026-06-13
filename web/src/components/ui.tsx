@@ -93,17 +93,9 @@ export function Tag({ tone, className, children }: { tone?: "g" | "c" | "s"; cla
   );
 }
 
-/** The app logo mark (pink QUID on navy), framed like the other brutalist chips. */
+/** The app logo mark. */
 export function Logo({ size = 34, className }: { size?: number; className?: string }) {
-  return (
-    <img
-      src="/quid-logo.png"
-      alt="Quid"
-      width={size}
-      height={size}
-      className={cn("flex-none rounded-xl border-[3px] border-ink", className)}
-    />
-  );
+  return <img src="/quid-logo.png" alt="Quid" width={size} height={size} className={cn("flex-none", className)} />;
 }
 
 type Tone = "quid" | "coral" | "sun";

@@ -1,6 +1,22 @@
 import { useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { post, storePlaidToken } from "./api";
+import { currentUser, fetchPoolActivity, post, storePlaidToken } from "./api";
+
+/** The most recent real advance issued by the QuidPool contract (for receipts in the UI). */
+export function useLatestAdvance() {
+  const [latest, setLatest] = useState<{ id: number; amountUsd?: number; explorer: string } | null>(null);
+  useEffect(() => {
+    fetchPoolActivity()
+      .then((r) => {
+        const issued = r.events.find((e) => e.kind === "issued");
+        if (issued) setLatest({ id: issued.id, amountUsd: issued.amountUsd, explorer: r.explorer });
+      })
+      .catch(() => {
+        /* chain unreachable -> the UI shows pending */
+      });
+  }, []);
+  return latest;
+}
 
 /**
  * Auth via CSPR.click (social login + silent self-custodial Casper wallet).
@@ -49,9 +65,12 @@ export function usePlaidConnect(onDone: () => void) {
   const { open, ready } = usePlaidLink({
     token,
     onSuccess: (publicToken: string) => {
-      post<{ access_token?: string }>("/plaid/exchange", { public_token: publicToken })
+      post<{ access_token?: string }>("/plaid/exchange", {
+        public_token: publicToken,
+        userId: currentUser()?.id, // persists the bank item on the user's profile
+      })
         .then((r) => {
-          if (r.access_token) storePlaidToken(r.access_token); // feeds the Activity screen
+          if (r.access_token) storePlaidToken(r.access_token);
         })
         .catch(() => {})
         .finally(onDone);
