@@ -163,7 +163,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         return;
       }
       const sbUrl = process.env.SUPABASE_URL;
-      const sbKey = process.env.SUPABASE_ANON_KEY;
+      const sbKey = process.env.SUPABASE_SERVICE_KEY ?? process.env.SUPABASE_ANON_KEY;
       if (!sbUrl || !sbKey) {
         sendJson(res, 200, { user: { id: "demo", username, tier: "plus" }, mock: true });
         return;

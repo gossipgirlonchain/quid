@@ -15,7 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  // Prefer the service-role key (server-only; bypasses RLS). Falls back to the
+  // anon key so the flow works before the key is set. Never shipped to the browser.
+  const key = process.env.SUPABASE_SERVICE_KEY ?? process.env.SUPABASE_ANON_KEY;
   if (!url || !key) return res.status(200).json({ user: { id: "demo", username, tier: "plus" }, mock: true });
 
   try {
