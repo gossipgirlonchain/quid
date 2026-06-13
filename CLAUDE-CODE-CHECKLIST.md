@@ -105,6 +105,7 @@ The MVP that *qualifies* is milestones 1, 2, and 3 (a real Testnet transaction f
 
 ### Post-hackathon TODO (deferred 2026-06-12)
 
+- **Wire the real off-ramp.** An advance lands as dUSDC in the user's Casper wallet; the app now has a "Cash out to bank" flow (`web/src/screens/CashOut.tsx` → `/api/offramp/payout`) but it returns a simulated ACH payout. There's no turnkey Casper→fiat provider, so the real fix is: pick a payout provider (Coinflow/Stripe/Dwolla), set `OFFRAMP_PROVIDER` + keys, and implement the conversion + ACH-to-Plaid-linked-account in `api/offramp/payout.ts`. On-ramp is real (Ramp Network) once `VITE_RAMP_HOST_API_KEY` is set — confirm Casper's `VITE_RAMP_ASSET` code on Ramp's supported-assets list.
 - **Harden Supabase RLS.** The `profiles` table (Supabase project `quid` / `wtehcopktelnnpeyticf`) has permissive `WITH CHECK (true)` INSERT/UPDATE policies — flagged by the security advisor. Code already prefers `SUPABASE_SERVICE_KEY` over the anon key server-side, so the fix is: (1) add the `service_role` secret as `SUPABASE_SERVICE_KEY` (Vercel `quid` project + `agent/.env`), (2) run a migration dropping the anon write policies so the table is server-only. Low risk today (key is server-side only, sandbox Plaid tokens), but do before real bank data.
 
 ### Environment gotcha (read if builds hang)
