@@ -17,6 +17,7 @@ export function Button({
         "flex w-full items-center justify-center gap-2 rounded-xl border-[3px] border-ink bg-surface font-body font-bold",
         "transition-[transform,box-shadow] duration-100 ease-out active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
         "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
+        "disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:active:translate-x-0 disabled:active:translate-y-0",
         sm ? "min-h-10 px-3 py-2.5 text-sm shadow-brutal-sm" : "min-h-12 px-4 py-[14px] text-base shadow-brutal-sm",
         variant === "primary" && "bg-quid",
         variant === "coral" && "bg-coral text-white",

@@ -64,16 +64,21 @@ export function Login() {
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value.trim())}
+          onKeyDown={(e) => e.key === "Enter" && onLogin("apple")}
           placeholder="@username"
+          autoFocus
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
           className="min-h-12 rounded-xl border-[3px] border-ink bg-surface px-4 py-3 text-center font-mono text-[15px] font-bold shadow-brutal-sm outline-none placeholder:font-normal placeholder:text-muted focus-visible:ring-[3px] focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         />
-        {err && <p className="font-mono text-[11px] text-coral">{err}</p>}
-        {!err && username.length > 0 && !valid && (
-          <p className="font-mono text-[11px] text-muted">3–20 chars · letters, numbers, _</p>
-        )}
+        {err ? (
+          <p className="font-mono text-[11px] text-coral">{err}</p>
+        ) : !valid ? (
+          <p className="font-mono text-[11px] text-muted">
+            {username.length === 0 ? "Pick a username to continue" : "3–20 chars · letters, numbers, _"}
+          </p>
+        ) : null}
         <Button onClick={() => onLogin("apple")} disabled={!valid || busy}>
           {busy ? "Creating account…" : " Continue with Apple"}
         </Button>
