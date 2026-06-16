@@ -27,7 +27,14 @@ export function AutoCovered() {
         </Row>
         <Row className="pt-1.5">
           <span>On-chain</span>
-          <span className="font-mono text-[12px] underline">0x9c2e…4af ↗</span>
+          <a
+            href="https://testnet.cspr.live/contract-package/ccdd94c7cf3b559906616f97c0d6624d97969ff5ca5cad7c8e749159ccd4ce34"
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-[12px] underline"
+          >
+            QuidPool ↗
+          </a>
         </Row>
       </Card>
       <Card flat className="border-dashed">
