@@ -44,7 +44,7 @@ async function main() {
   await waitForSettlement(fundHash);
   console.log("  fund_pool finalized ✓");
 
-  console.log(`\nPool seeded. Verify on https://testnet.cspr.live/deploy/${fundHash}`);
+  console.log(`\nPool seeded. Verify on https://testnet.cspr.live/transaction/${fundHash}`);
 }
 
 main().catch((e) => {

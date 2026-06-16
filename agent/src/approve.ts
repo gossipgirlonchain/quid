@@ -49,7 +49,7 @@ async function main() {
   tx.sign(borrower);
   const res = await rpc.putTransaction(tx);
   const hash = String(res.transactionHash.toHex?.() ?? res.transactionHash);
-  console.log(`  submitted: https://testnet.cspr.live/deploy/${hash}`);
+  console.log(`  submitted: https://testnet.cspr.live/transaction/${hash}`);
   await waitForSettlement(hash);
   console.log("  finalized ✓ — the agent can now auto-repay up to the allowance");
 }

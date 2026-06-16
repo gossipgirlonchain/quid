@@ -32,7 +32,7 @@ const GAS_CSPR = 25; // sent to a fresh borrower so it can sign its approve
 const DECIMALS = 6;
 const PAYMENT_MOTES = 5_000_000_000;
 
-const link = (h: string) => `https://testnet.cspr.live/deploy/${h}`;
+const link = (h: string) => `https://testnet.cspr.live/transaction/${h}`;
 const toUnits = (usd: number) => BigInt(Math.round(usd * 10 ** DECIMALS)).toString();
 
 function packageHex(h: string): string {

@@ -5,7 +5,7 @@
 ## How to record
 
 - Screen-record the **live app at https://app.quid.fund** in a phone-width viewport (≈390px). It's a real PWA, not a mockup.
-- Keep the **Casper Testnet explorer** (testnet.cspr.live) open in a second tab for the on-chain beat. Easiest real tx to show: the [advance lifecycle](https://testnet.cspr.live/deploy/5c0293673c6aca3b5b0cfca8d1d48c4441c21c6de5dc2cd02d4f74408aaac9b6) or open Activity in-app and click "Verify on cspr.live".
+- Keep the **Casper Testnet explorer** (testnet.cspr.live) open in a second tab for the on-chain beat. Easiest real tx to show: the [advance lifecycle](https://testnet.cspr.live/transaction/5c0293673c6aca3b5b0cfca8d1d48c4441c21c6de5dc2cd02d4f74408aaac9b6) or open Activity in-app and click "Verify on cspr.live".
 - Narrate over the top. Calm, plain-spoken — the way Quid talks.
 - Deep-links help during recording: append `?screen=home`, `?screen=activity`, etc. to jump screens cleanly.
 

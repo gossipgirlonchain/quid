@@ -21,9 +21,9 @@ This isn't a mockup — the contract is deployed, seeded, and the agent has issu
 |---|---|
 | **QuidPool contract** | [`hash-ccdd94c7…ce34`](https://testnet.cspr.live/contract-package/ccdd94c7cf3b559906616f97c0d6624d97969ff5ca5cad7c8e749159ccd4ce34) · [install tx](https://testnet.cspr.live/transaction/35c0b3043257ab1c23e2e0beab2898c608d79a5c10ef767a6e624b0fa1d1f765) |
 | **Test stablecoin (CEP-18 dUSDC)** | [`hash-8665867c…1e89`](https://testnet.cspr.live/transaction/9a9274617fceb51c93922bb5b4d952be34d8a777037cf4dd99c1e41620f3b99d) |
-| **Pool seeded ($10,000)** | [approve](https://testnet.cspr.live/deploy/8d7e070bbb28c163907a2505b068e2636dd1f83b86bf1088863bb1e3a5e8e9c6) → [fund_pool](https://testnet.cspr.live/deploy/4de71a843a5a80b46fe1385310dab52534cc3fdcb6a19310880b8d6d7625d1c3) |
-| **Full advance lifecycle** | [issue](https://testnet.cspr.live/deploy/5c0293673c6aca3b5b0cfca8d1d48c4441c21c6de5dc2cd02d4f74408aaac9b6) → [borrower approve](https://testnet.cspr.live/deploy/1ba9bba313e77a1c14a14db84666e755bde52c93bafa5758c2eeffa722fda999) → [repay](https://testnet.cspr.live/deploy/4276667858322b88f41a254e630addc3a44a044b2ada08dd541d189d2a367e1d) |
-| **Autonomous loop advance** | [issue](https://testnet.cspr.live/deploy/2512cb6b34cdd54e0d441b7f177839cc8642d6ba3dc3d32d1deb735967b3047c) → [repay](https://testnet.cspr.live/deploy/c00d1366334f2302001921b71ce6228ef9e5f89e2a4b5299759f6626af9af3f0) (advance id read from the `AdvanceIssued` event) |
+| **Pool seeded ($10,000)** | [approve](https://testnet.cspr.live/transaction/8d7e070bbb28c163907a2505b068e2636dd1f83b86bf1088863bb1e3a5e8e9c6) → [fund_pool](https://testnet.cspr.live/transaction/4de71a843a5a80b46fe1385310dab52534cc3fdcb6a19310880b8d6d7625d1c3) |
+| **Full advance lifecycle** | [issue](https://testnet.cspr.live/transaction/5c0293673c6aca3b5b0cfca8d1d48c4441c21c6de5dc2cd02d4f74408aaac9b6) → [borrower approve](https://testnet.cspr.live/transaction/1ba9bba313e77a1c14a14db84666e755bde52c93bafa5758c2eeffa722fda999) → [repay](https://testnet.cspr.live/transaction/4276667858322b88f41a254e630addc3a44a044b2ada08dd541d189d2a367e1d) |
+| **Autonomous loop advance** | [issue](https://testnet.cspr.live/transaction/2512cb6b34cdd54e0d441b7f177839cc8642d6ba3dc3d32d1deb735967b3047c) → [repay](https://testnet.cspr.live/transaction/c00d1366334f2302001921b71ce6228ef9e5f89e2a4b5299759f6626af9af3f0) (advance id read from the `AdvanceIssued` event) |
 
 The app's **Activity** screen reads these events straight from the QuidPool contract over JSON-RPC — what you see in the app is the chain.
 
