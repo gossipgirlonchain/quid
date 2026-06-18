@@ -1,7 +1,7 @@
 import { QuidProvider, useQuid } from "./state";
 import { AppBar, BottomNav, InstallBanner, PhoneShell, PushBanner } from "./components/Shell";
 import { AdvanceSheet } from "./components/AdvanceSheet";
-import { Connect, Login, SetBorrow, Welcome } from "./screens/Onboarding";
+import { Authorize, Connect, Login, SetBorrow, Welcome } from "./screens/Onboarding";
 import { Home } from "./screens/Home";
 import { Active, Heads, Settled, Work } from "./screens/AdvanceFlow";
 import { AutoCovered, Declined } from "./screens/Outcomes";
@@ -21,6 +21,8 @@ function Router() {
       return <Connect />;
     case "setborrow":
       return <SetBorrow />;
+    case "authorize":
+      return <Authorize />;
     case "home":
       return <Home />;
     case "heads":

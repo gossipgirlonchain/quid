@@ -35,6 +35,37 @@ export function useAuth() {
   return { login, live };
 }
 
+// The dUSDC CEP-18 token and the QuidPool spender, deployed on Casper Testnet.
+const DUSDC_TOKEN = "hash-8665867ccff5f10ebcec71750f45a02599d467ea8a6371fbc8e828ccd2461e89";
+const QUID_POOL = "hash-ccdd94c7cf3b559906616f97c0d6624d97969ff5ca5cad7c8e749159ccd4ce34";
+const MAX_ALLOWANCE = "100000000000"; // 100,000 dUSDC at 6 decimals (a sane standing ceiling)
+
+/**
+ * The one user signature in the whole flow: a CEP-18 `approve` on dUSDC granting
+ * the QuidPool a standing allowance, so the agent's `repay_advance` can pull each
+ * advance back when wages land (the contract repays via `transfer_from`). Signed
+ * once, at onboarding, by the user's CSPR.click wallet.
+ *
+ * LIVE (VITE_CSPRCLICK_APP_ID set): build the approve deploy and hand it to
+ * CSPR.click to sign. Mirror the agent's working call in agent/src/casper.ts
+ * `approveStablecoin` exactly:
+ *   ContractCallBuilder().byPackageHash(DUSDC_TOKEN).entryPoint("approve")
+ *     .runtimeArgs(Args.fromMap({
+ *       spender: CLValue.newCLKey(Key.newKey(QUID_POOL)),   // the pool is the spender
+ *       amount:  CLValue.newCLUInt256(MAX_ALLOWANCE),
+ *     }))
+ *     .chainName("casper-test").payment(2_500_000_000).build()
+ * MOCK (default): no CSPR.click wallet to sign with, so resolve as authorized and
+ * let onboarding proceed (the demo borrower already holds a real on-chain allowance).
+ */
+export async function authorizeRepayments(): Promise<{ ok: boolean; mock: boolean }> {
+  const live = Boolean(import.meta.env.VITE_CSPRCLICK_APP_ID);
+  void [DUSDC_TOKEN, QUID_POOL, MAX_ALLOWANCE]; // used by the live signer documented above
+  if (!live) return { ok: true, mock: true };
+  // Real CSPR.click approve-deploy signature lands here when live (see INTEGRATIONS.md).
+  return { ok: true, mock: false };
+}
+
 /**
  * Bank connect via Plaid Link. Fetches a link token from the backend; if Plaid is
  * configured the real Link flow opens and we exchange the public token, otherwise

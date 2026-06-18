@@ -30,6 +30,7 @@ const users: User[] = [
       "01abcd000000000000000000000000000000000000000000000000000000ef",
     tier: "plus",
     autoCover: true,
+    repayAuthorized: true, // the demo borrower granted the pool a standing allowance (npm run approve)
   },
 ];
 
@@ -101,6 +102,11 @@ async function tick(user: User) {
     if (cash.projectedAtPaydayUsd < 0) {
       console.log(`[${user.id}] declined: ${decision.reason} (safe ceiling $${decision.safeCeilingUsd})`);
     }
+    return;
+  }
+  // Never advance to a user who hasn't granted the pull-back allowance: repay would fail.
+  if (!user.repayAuthorized) {
+    console.log(`[${user.id}] can advance $${decision.amountUsd}, but repayments aren't authorized yet. Skipping.`);
     return;
   }
   if (!user.autoCover) {

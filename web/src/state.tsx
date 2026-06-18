@@ -5,6 +5,7 @@ export type Screen =
   | "login"
   | "connect"
   | "setborrow"
+  | "authorize"
   | "home"
   | "heads"
   | "work"
@@ -17,10 +18,10 @@ export type Screen =
   | "activity"
   | "profile";
 
-export const ONBOARDING: Screen[] = ["welcome", "login", "connect", "setborrow"];
+export const ONBOARDING: Screen[] = ["welcome", "login", "connect", "setborrow", "authorize"];
 
 const ALL_SCREENS: Screen[] = [
-  "welcome", "login", "connect", "setborrow", "home", "heads", "work",
+  "welcome", "login", "connect", "setborrow", "authorize", "home", "heads", "work",
   "active", "settled", "autocover", "declined", "cashout", "wallet", "activity", "profile",
 ];
 
@@ -93,6 +94,10 @@ interface QuidState {
   /** User's profile photo (data URL), persisted locally. */
   avatarUrl: string | null;
   setAvatar: (dataUrl: string) => void;
+
+  /** Whether the user granted QuidPool the standing repayment allowance. Gates auto-cover. */
+  repayAuthorized: boolean;
+  setRepayAuthorized: (v: boolean) => void;
 }
 
 const AVATAR_KEY = "quid.avatar";
@@ -101,6 +106,15 @@ function loadAvatar(): string | null {
     return localStorage.getItem(AVATAR_KEY);
   } catch {
     return null;
+  }
+}
+
+const REPAY_KEY = "quid.repay_authorized";
+function loadRepayAuthorized(): boolean {
+  try {
+    return localStorage.getItem(REPAY_KEY) === "true";
+  } catch {
+    return false;
   }
 }
 
@@ -123,6 +137,7 @@ export function QuidProvider({ children }: { children: ReactNode }) {
   const [push, setPush] = useState<PushMsg | null>(null);
   const [install, setInstall] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(loadAvatar);
+  const [repayAuthorized, setRepayAuthorizedState] = useState<boolean>(loadRepayAuthorized);
 
   const value = useMemo<QuidState>(() => {
     const go = (s: Screen) => setScreen(s);
@@ -168,8 +183,17 @@ export function QuidProvider({ children }: { children: ReactNode }) {
           /* quota / private mode -> stays in memory for the session */
         }
       },
+      repayAuthorized,
+      setRepayAuthorized: (v: boolean) => {
+        setRepayAuthorizedState(v);
+        try {
+          localStorage.setItem(REPAY_KEY, String(v));
+        } catch {
+          /* private mode -> stays in memory for the session */
+        }
+      },
     };
-  }, [screen, auto, cap, borrow, chosen, sheetOpen, score, push, install, avatarUrl]);
+  }, [screen, auto, cap, borrow, chosen, sheetOpen, score, push, install, avatarUrl, repayAuthorized]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

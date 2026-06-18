@@ -6,7 +6,7 @@ import { cn } from "../lib/cn";
 import { useQuid } from "../state";
 
 export function Home() {
-  const { auto, toggleAuto, cap, setCap, openSheet, go, showPush, showInstall } = useQuid();
+  const { auto, toggleAuto, cap, setCap, openSheet, go, showPush, showInstall, repayAuthorized } = useQuid();
   const [info, setInfo] = useState(false);
   const overCap = cap >= 250;
 
@@ -31,11 +31,22 @@ export function Home() {
               i
             </button>
           </div>
-          <Toggle big on={auto} onToggle={toggleAuto} />
+          {repayAuthorized ? (
+            <Toggle big on={auto} onToggle={toggleAuto} />
+          ) : (
+            <Button sm variant="primary" className="w-auto px-3" onClick={() => go("authorize")}>
+              Authorize
+            </Button>
+          )}
         </Row>
         {info && (
           <p className="pt-2.5 text-[13px] leading-[1.45] text-muted">
             If you'll go short, I cover it up to your cap and pay myself back on payday. No need to ask.
+          </p>
+        )}
+        {!repayAuthorized && (
+          <p className="pt-2.5 text-[13px] leading-[1.45] text-muted">
+            Authorize repayments once and I can cover you automatically, no approval each time.
           </p>
         )}
         <Divider />

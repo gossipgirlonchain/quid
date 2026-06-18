@@ -35,4 +35,6 @@ export interface User {
   casperPublicKey: string;
   tier: PlanTier;
   autoCover: boolean;
+  /** Granted QuidPool the standing repayment allowance (the onboarding `approve`). */
+  repayAuthorized: boolean;
 }

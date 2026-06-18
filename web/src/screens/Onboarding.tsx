@@ -4,7 +4,7 @@ import { Button, Card, Divider, H1, Hint, Kicker, Logo, Money, Row, Tag } from "
 import { Slider } from "../components/Slider";
 import { cn } from "../lib/cn";
 import { useQuid, planForAmount, PLAN_CAP, PLAN_LABEL, PLAN_PRICE } from "../state";
-import { useAuth, usePlaidConnect, startCheckout } from "../lib/integrations";
+import { useAuth, usePlaidConnect, startCheckout, authorizeRepayments } from "../lib/integrations";
 import { signUp } from "../lib/api";
 
 export function Welcome() {
@@ -55,7 +55,7 @@ export function Login() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col justify-center gap-[14px] text-center">
-        <Kicker>Step 1 of 3</Kicker>
+        <Kicker>Step 1 of 4</Kicker>
         <H1 className="text-[23px]">Create your account</H1>
         <p className="text-pretty leading-[1.45]">
           No seed phrases, no wallet setup. Pick a username, sign in, and Quid creates a secure Casper wallet for you
@@ -100,7 +100,7 @@ export function Connect() {
   return (
     <ScreenShell>
       <div className="flex flex-1 flex-col justify-center gap-[14px] text-center">
-        <Kicker>Step 2 of 3</Kicker>
+        <Kicker>Step 2 of 4</Kicker>
         <H1 className="text-[23px]">Connect your bank</H1>
         <p className="text-pretty leading-[1.45]">
           So I can spot when you're heading short and verify the income I lend against. Read-only, I can't move money
@@ -135,12 +135,12 @@ export function SetBorrow() {
   const note = tier === "free" ? "Free plan" : `${PLAN_LABEL[tier]} · $${PLAN_PRICE[tier]}/mo`;
   const onContinue = async () => {
     if (paywall) await startCheckout(tier);
-    go("home");
+    go("authorize");
   };
 
   return (
     <ScreenShell className="text-center">
-      <Kicker className="mt-1.5">Step 3 of 3</Kicker>
+      <Kicker className="mt-1.5">Step 3 of 4</Kicker>
       <H1 className="text-[21px]">How much might you need before payday?</H1>
       <Money className="my-1.5">${borrow}</Money>
       <Slider min={0} max={500} value={borrow} onChange={setBorrow} ariaLabel="Expected borrowing" />
@@ -169,6 +169,46 @@ export function SetBorrow() {
         {paywall ? "Subscribe & continue" : "Continue free"}
       </Button>
       <Hint>No fees per advance, ever. Just your plan.</Hint>
+    </ScreenShell>
+  );
+}
+
+export function Authorize() {
+  const { go, setRepayAuthorized } = useQuid();
+  const [busy, setBusy] = useState(false);
+
+  const onAuthorize = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await authorizeRepayments(); // one CEP-18 approve: grants QuidPool the repayment allowance
+      setRepayAuthorized(true);
+    } finally {
+      setBusy(false);
+      go("home");
+    }
+  };
+
+  return (
+    <ScreenShell>
+      <div className="flex flex-1 flex-col justify-center gap-[14px] text-center">
+        <Kicker>Step 4 of 4</Kicker>
+        <H1 className="text-[23px]">Authorize repayments</H1>
+        <p className="text-pretty leading-[1.45]">
+          One signature lets Quid settle each advance automatically the moment your wages land. No approvals after
+          this, and never a penny more than you borrowed.
+        </p>
+        <Card flat className="border-dashed text-left">
+          <Row>
+            <span className="font-semibold">🔒 You sign once</span>
+            <Tag>CSPR.CLICK</Tag>
+          </Row>
+        </Card>
+      </div>
+      <Button variant="primary" onClick={onAuthorize} disabled={busy}>
+        {busy ? "Authorizing…" : "Authorize repayments"}
+      </Button>
+      <Hint>Grants Quid a standing repayment allowance on your wallet. Revoke anytime.</Hint>
     </ScreenShell>
   );
 }
