@@ -20,7 +20,7 @@ export function Heads() {
       </Card>
       <Card>
         <p className="text-[15px]">You'll be short by</p>
-        <Money className="my-1.5 text-quid-deep">$180.00</Money>
+        <Money className="my-1.5 text-quid">$180.00</Money>
         <p>I can advance it now and repay myself the moment your wages arrive on the 30th.</p>
         <Divider />
         <Row className="py-1">
