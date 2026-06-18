@@ -35,11 +35,11 @@
 
 **Screen:** Home → push notification.
 
-**Voiceover:** "Now Quid watches your cash flow. When it sees rent will leave you short before your wages land, it pings you."
+**Voiceover:** "Quid watches your cash flow and looks ahead. It sees rent will clear you out a few days before payday, and because moving money to a bank takes a day or two, it acts early, with time to spare, not on the day it's due."
 
 **On screen:** On Home, tap **"Notify: heading short."** The push banner slides down. Tap it.
 
-**Proving:** Autonomous monitoring; the push-notification hero moment.
+**Proving:** Autonomous monitoring with lead time; the push-notification hero moment. The agent acts ahead of the bill, not the day of, so the cash lands in time.
 
 ## Scene 4 - The advance, on-chain (0:44–1:10)
 
@@ -90,6 +90,30 @@
 **On screen:** Return to Home, end on the calm "You're covered" card.
 
 ---
+
+## Timing & settlement (the agent acts with lead time)
+
+Cash-out to a bank settles in ~1-2 business days, so the agent can't wait for the
+shortfall date, it has to act early enough that the money lands before the bill debits.
+
+The rule (activates with the real off-ramp; see the Coinflow plan in CLAUDE-CODE-CHECKLIST):
+
+- `initiate_by = businessDaysBefore(bill_date, CASHOUT_LEAD_DAYS + SAFETY_BUFFER_DAYS)`
+- defaults: `CASHOUT_LEAD_DAYS = 2` (standard ACH), `SAFETY_BUFFER_DAYS = 1`
+- act when `today >= initiate_by` AND projected short, so for rent on the 28th the agent
+  moves around the 24th-25th, not the 27th.
+- use business-day math (skip weekends + bank holidays), and fold in the ACH daily cutoff
+  (~mid-afternoon ET): initiating after cutoff counts from the next business day.
+
+Edge case, shortfall detected too late (today is already past `initiate_by`): standard
+cash-out can't arrive in time. Options: (a) notify and let the user decide, (b) use a
+faster rail (same-day ACH / RTP) at higher cost, (c) keep the advance in the Quid wallet
+if the obligation can be paid from there.
+
+Lives in `agent/src/decision.ts` (a timing gate alongside the amount gate) plus an
+extended projection horizon so the agent sees the bill while there's still lead time. In
+today's demo the cash-out is a simulated payout, so there's no real settlement race; this
+rule turns on when the live off-ramp is wired.
 
 ## One-line pitch (for the submission text)
 
