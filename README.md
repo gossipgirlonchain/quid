@@ -159,6 +159,7 @@ npm install && npm run dev  # http://localhost:5173  (talks to the agent backend
 ## Docs
 
 - Product brief — `docs/Quid-project-brief.md`
+- Product & stack breakdown — `docs/Quid-product-and-stack.md`
 - User flows — `docs/Quid-user-flows.md`
 - Demo script — `docs/Quid-demo-script.md`
 - Submission write-up — `docs/Quid-submission.md`

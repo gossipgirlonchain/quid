@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-/* Design tokens (neobrutalism) — palette: navy / pink / indigo.
+/* Design tokens (neobrutalism) - palette: navy / pink / indigo.
    Pairing rules (WCAG AA):
    - quid (pink #FF70B7) fills always carry ink text (7.3:1). Never pink text
-     on light surfaces (2.5:1) — use quid-deep (#C81E78, 4.75:1+) instead.
+     on light surfaces (2.5:1) - use quid-deep (#C81E78, 4.75:1+) instead.
    - coral is the alert role, now solid navy: always white text (16.5:1).
    - sun is the working/highlight role, now indigo: always white text (6.2:1).
    - muted (indigo) is for secondary text on paper/white only (5.5:1+). */
@@ -22,7 +22,7 @@
   --font-body: "Hanken Grotesk", sans-serif;
   --font-mono: "Space Mono", monospace;
 
-  /* Solid offset shadows, zero blur — the brutalist "push" surfaces. */
+  /* Solid offset shadows, zero blur - the brutalist "push" surfaces. */
   --shadow-brutal: 6px 6px 0 #070e36;
   --shadow-brutal-sm: 4px 4px 0 #070e36;
   --shadow-brutal-lg: 10px 10px 0 #070e36;
@@ -45,7 +45,7 @@
   }
 }
 
-/* Keyframes — referenced via Tailwind's animate-[name_…] arbitrary utilities. */
+/* Keyframes - referenced via Tailwind's animate-[name_…] arbitrary utilities. */
 @keyframes screen-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
@@ -68,7 +68,7 @@
   50% { background: var(--color-ink); }
 }
 
-/* Neobrutalist range slider — mirrors the mockup's .cap control. */
+/* Neobrutalist range slider - mirrors the mockup's .cap control. */
 .quid-slider {
   -webkit-appearance: none;
   appearance: none;

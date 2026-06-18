@@ -54,7 +54,7 @@ export function Activity() {
           ↻
         </Button>
       </Row>
-      <p className="-mt-1 text-muted">Everything Quid did for you, on the record — on-chain.</p>
+      <p className="-mt-1 text-muted">Everything Quid did for you, recorded on-chain.</p>
 
       {error && (
         <Card flat className="border-dashed text-center text-[14px]">

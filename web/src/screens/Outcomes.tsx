@@ -55,7 +55,7 @@ export function Declined() {
         ● NOT THIS TIME
       </Tag>
       <Card>
-        <AgentLine tone="coral" kicker="Quid">
+        <AgentLine kicker="Quid">
           I won't cover $400 this time. Your verified income can't repay that comfortably by payday, and I'm not going
           to put you in a hole.
         </AgentLine>

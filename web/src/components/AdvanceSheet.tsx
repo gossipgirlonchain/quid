@@ -4,7 +4,7 @@ import { Slider } from "./Slider";
 import { cn } from "../lib/cn";
 import { useQuid } from "../state";
 
-/** Bottom-sheet advance confirm — the one irreversible, money-moving step. */
+/** Bottom-sheet advance confirm - the one irreversible, money-moving step. */
 export function AdvanceSheet() {
   const { sheetOpen, closeSheet, chosen, setChosen, go } = useQuid();
   const dialogRef = useRef<HTMLDivElement>(null);

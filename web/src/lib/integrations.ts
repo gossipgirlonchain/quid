@@ -22,7 +22,7 @@ export function useLatestAdvance() {
  * Auth via CSPR.click (social login + silent self-custodial Casper wallet).
  *
  * LIVE: set VITE_CSPRCLICK_APP_ID (from console.cspr.build) and wire the real
- * ClickProvider — see web/INTEGRATIONS.md. login() then opens CSPR.click, which
+ * ClickProvider - see web/INTEGRATIONS.md. login() then opens CSPR.click, which
  * provisions a wallet with no seed phrase.
  * MOCK (default): login() is a no-op and onboarding proceeds with a demo wallet,
  * so the flow is fully clickable with no credentials.

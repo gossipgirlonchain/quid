@@ -6,6 +6,7 @@ import { Home } from "./screens/Home";
 import { Active, Heads, Settled, Work } from "./screens/AdvanceFlow";
 import { AutoCovered, Declined } from "./screens/Outcomes";
 import { CashOut } from "./screens/CashOut";
+import { Wallet } from "./screens/Wallet";
 import { Activity } from "./screens/Activity";
 import { Profile } from "./screens/Profile";
 
@@ -36,6 +37,8 @@ function Router() {
       return <Declined />;
     case "cashout":
       return <CashOut />;
+    case "wallet":
+      return <Wallet />;
     case "activity":
       return <Activity />;
     case "profile":

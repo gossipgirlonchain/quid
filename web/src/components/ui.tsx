@@ -133,27 +133,20 @@ export function Avatar({
   );
 }
 
-/** Agent avatar + a kicker line + the agent's first-person message. */
+/** A kicker line + the agent's first-person message. */
 export function AgentLine({
-  tone = "quid",
-  pulse = false,
   kicker,
   light = false,
   children,
 }: {
-  tone?: Tone;
-  pulse?: boolean;
   kicker: ReactNode;
   light?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-[11px]">
-      <Avatar tone={tone} pulse={pulse} />
-      <div>
-        <Kicker className={light ? "text-white" : "text-ink"}>{kicker}</Kicker>
-        <p className={cn("text-[15px] font-semibold", light && "text-white")}>{children}</p>
-      </div>
+    <div>
+      <Kicker className={light ? "text-white" : "text-ink"}>{kicker}</Kicker>
+      <p className={cn("mt-0.5 text-[15px] font-semibold", light && "text-white")}>{children}</p>
     </div>
   );
 }

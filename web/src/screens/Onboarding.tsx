@@ -46,7 +46,7 @@ export function Login() {
       await login(p);
       go("connect");
     } catch {
-      setErr("Couldn't claim that username — try another.");
+      setErr("Couldn't claim that username. Try another.");
     } finally {
       setBusy(false);
     }

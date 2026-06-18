@@ -14,7 +14,7 @@ export function Heads() {
         ● HEADS-UP · PUSH NOTIFICATION
       </Tag>
       <Card className="border-ink bg-coral text-white">
-        <AgentLine tone="quid" pulse light kicker="Quid · just now">
+        <AgentLine light kicker="Quid · just now">
           Heads up. Your landlord pulls rent on the <b>28th</b>, two days before your wages land.
         </AgentLine>
       </Card>
@@ -43,15 +43,14 @@ export function Heads() {
   );
 }
 
-const WORK_STEPS = [
-  { t: "Verifying your wages", s: "x402 · paid API call" },
-  { t: "Issuing advance on Casper", s: "Odra contract · Testnet" },
-  { t: "Releasing $180 to you", s: "CSPR → your wallet" },
-];
-
 export function Work() {
-  const { go } = useQuid();
+  const { go, chosen } = useQuid();
   const latest = useLatestAdvance();
+  const steps = [
+    { t: "Verifying your wages", s: "x402 · paid API call" },
+    { t: "Issuing advance on Casper", s: "Odra contract · Testnet" },
+    { t: `Releasing $${chosen} to you`, s: "CSPR → your wallet" },
+  ];
   const [step, setStep] = useState(-1); // index of the in-progress step; > 2 = all done
   const [tx, setTx] = useState(false);
 
@@ -73,12 +72,12 @@ export function Work() {
         ● QUID IS WORKING
       </Tag>
       <Card className="bg-sun text-white">
-        <AgentLine tone="quid" pulse light kicker="On it">
+        <AgentLine light kicker="On it">
           Sorting your advance. This takes a few seconds.
         </AgentLine>
       </Card>
       <Card>
-        {WORK_STEPS.map((w, i) => {
+        {steps.map((w, i) => {
           const done = step > i;
           const now = step === i;
           return (
@@ -119,7 +118,7 @@ export function Work() {
 }
 
 export function Active() {
-  const { go } = useQuid();
+  const { go, chosen } = useQuid();
   const latest = useLatestAdvance();
   return (
     <ScreenShell>
@@ -128,9 +127,9 @@ export function Active() {
       </Tag>
       <Card>
         <AgentLine kicker="Done">
-          Your advance is ready in your Quid wallet. Cash it out to your bank whenever — I'll repay myself on the 30th.
+          Your advance is ready in your Quid wallet. Cash it out to your bank whenever. I'll repay myself on the 30th.
         </AgentLine>
-        <Money className="mb-0.5 mt-3.5">${(latest?.amountUsd ?? 180).toFixed(2)}</Money>
+        <Money className="mb-0.5 mt-3.5">${chosen.toFixed(2)}</Money>
         <Row className="mt-2">
           <span className="text-muted">Repay</span>
           <span className="font-mono">30 Jun · auto</span>
@@ -143,7 +142,7 @@ export function Active() {
           <span className="text-muted">On-chain</span>
           {latest ? (
             <a href={latest.explorer} target="_blank" rel="noreferrer" className="font-mono text-[12px] underline">
-              advance #{latest.id} ↗
+              QuidPool ↗
             </a>
           ) : (
             <span className="font-mono text-[12px] text-muted">syncing…</span>
@@ -184,7 +183,7 @@ export function Settled() {
         ● SETTLED
       </Tag>
       <Card className="bg-quid">
-        <AgentLine pulse kicker="All square">
+        <AgentLine kicker="All square">
           Your wages landed. I paid back $184 automatically. Nothing for you to do.
         </AgentLine>
         <Money className="mb-0.5 mt-3.5 text-[30px]">Quid score {display}</Money>

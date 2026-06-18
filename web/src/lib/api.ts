@@ -62,6 +62,6 @@ export function storePlaidToken(token: string): void {
   try {
     localStorage.setItem(PLAID_TOKEN_KEY, token);
   } catch {
-    /* private mode etc. — the env-token fallback still works */
+    /* private mode etc. - the env-token fallback still works */
   }
 }

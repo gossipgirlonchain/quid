@@ -13,6 +13,7 @@ export type Screen =
   | "autocover"
   | "declined"
   | "cashout"
+  | "wallet"
   | "activity"
   | "profile";
 
@@ -20,7 +21,7 @@ export const ONBOARDING: Screen[] = ["welcome", "login", "connect", "setborrow"]
 
 const ALL_SCREENS: Screen[] = [
   "welcome", "login", "connect", "setborrow", "home", "heads", "work",
-  "active", "settled", "autocover", "declined", "cashout", "activity", "profile",
+  "active", "settled", "autocover", "declined", "cashout", "wallet", "activity", "profile",
 ];
 
 /** Demo deep-links: /?screen=activity jumps straight to a screen. */
@@ -31,6 +32,7 @@ function initialScreen(): Screen {
 /** Screens reachable from the bottom nav, mapped to their tab. */
 export const NAV_TABS: { id: Screen; label: string }[] = [
   { id: "home", label: "Home" },
+  { id: "wallet", label: "Wallet" },
   { id: "activity", label: "Activity" },
   { id: "profile", label: "Profile" },
 ];
