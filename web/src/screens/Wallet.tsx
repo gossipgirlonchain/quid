@@ -31,7 +31,7 @@ export function Wallet() {
       {/* What's actually in the wallet, ready to cash out */}
       <Card>
         <Kicker>Available to cash out</Kicker>
-        <Money className="my-1.5 text-quid">${outstanding.toFixed(2)}</Money>
+        <Money className="my-1.5">${outstanding.toFixed(2)}</Money>
         <p className="font-mono text-[12px] text-muted">dUSDC in your Casper wallet</p>
         <Divider />
         <Row className="py-1">

@@ -70,7 +70,7 @@ export function CashOut() {
       <p className="-mt-1 text-muted">Move your advance from your Quid wallet to your bank account.</p>
       <Card>
         <Kicker>In your Quid wallet</Kicker>
-        <Money className="my-1.5 text-quid">${amount.toFixed(2)}</Money>
+        <Money className="my-1.5">${amount.toFixed(2)}</Money>
         <p className="font-mono text-[12px] text-muted">dUSDC on Casper</p>
         <Divider />
         <Row className="py-1">
