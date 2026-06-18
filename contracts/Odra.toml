@@ -1,7 +1,7 @@
 [[contracts]]
 fqn = "quid_contracts::QuidPool"
 
-# Odra's stock CEP-18 token — built so livenet can deploy a test stablecoin
+# Odra's stock CEP-18 token - built so livenet can deploy a test stablecoin
 # (wasm/Cep18.wasm) for the pool to lend in. See bin/livenet_cep18.rs.
 [[contracts]]
 fqn = "odra_modules::cep18_token::Cep18"

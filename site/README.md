@@ -41,5 +41,5 @@ The "Get early access" form is a front-end stub: it validates the address, shows
 
 ## Where things live
 
-- `src/index.css` — design tokens (`@theme`) and the brutalist primitives (`.card`, `.btn`, `.tag`, the phone frame).
-- `src/components/` — one file per section: `Nav`, `Hero` (with `Phone`, the recreated app home screen), `HowItWorks`, `Agent`, `TrustRow`, `Pricing`, `Faq`, `Waitlist`, `Footer`.
+- `src/index.css` - design tokens (`@theme`) and the brutalist primitives (`.card`, `.btn`, `.tag`, the phone frame).
+- `src/components/` - one file per section: `Nav`, `Hero` (with `Phone`, the recreated app home screen), `HowItWorks`, `Agent`, `TrustRow`, `Pricing`, `Faq`, `Waitlist`, `Footer`.

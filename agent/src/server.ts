@@ -1,5 +1,5 @@
 // Consumer-app backend for Quid: Plaid Link token + exchange, Stripe Checkout + webhook.
-// Zero-dependency Node http server — reuses the agent's plaid/stripe/dotenv deps. Every
+// Zero-dependency Node http server - reuses the agent's plaid/stripe/dotenv deps. Every
 // endpoint degrades to a safe MOCK response when the relevant keys are absent, so the web
 // app's onboarding flow works end to end in demo mode with no credentials.
 //

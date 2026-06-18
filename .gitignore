@@ -6,7 +6,7 @@ dist/
 .env.*
 !.env.example
 
-# rust / odra (target is a *.nosync symlink locally — see the checklist's environment note)
+# rust / odra (target is a *.nosync symlink locally - see the checklist's environment note)
 target
 target.nosync/
 *.nosync

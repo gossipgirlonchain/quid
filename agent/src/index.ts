@@ -41,30 +41,30 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function runSimCycle() {
   const u = users[0];
 
-  console.log("— perceive —");
+  console.log("- perceive -");
   const cash = await getCashflow(u.plaidAccessToken);
   const short = Math.max(0, -cash.projectedAtPaydayUsd);
   console.log(`  balance $${cash.balanceUsd}, projected at payday $${cash.projectedAtPaydayUsd} (short by $${short})\n`);
 
-  console.log("— verify (x402) —");
+  console.log("- verify (x402) -");
   const { verified } = await verifyIncome(u.id);
   console.log(`  paid per-call verification: income ${verified ? "verified" : "unverified"}\n`);
 
   const rep = await reputationOf(u.casperPublicKey);
 
-  console.log("— decide —");
+  console.log("- decide -");
   const d = decideAdvance(u, cash, verified, rep);
   console.log(`  reputation ${rep}, safe ceiling $${d.safeCeilingUsd}`);
-  console.log(`  decision: ${d.approved ? `advance $${d.amountUsd}` : "decline"} — ${d.reason}\n`);
+  console.log(`  decision: ${d.approved ? `advance $${d.amountUsd}` : "decline"} - ${d.reason}\n`);
   if (!d.approved) return;
 
-  console.log(`— act (${u.autoCover ? "auto-cover, no ask" : "ask-first"}) —`);
+  console.log(`- act (${u.autoCover ? "auto-cover, no ask" : "ask-first"}) -`);
   await issueAdvance(u.casperPublicKey, d.amountUsd, cash.paydayTs);
   console.log(`  released $${d.amountUsd} stablecoin to ${u.id}'s wallet\n`);
 
   await delay(1000);
 
-  console.log("— settle —");
+  console.log("- settle -");
   if (await incomeHasLanded(u.plaidAccessToken)) {
     await repayAdvance(0);
     console.log(`  income landed, repaid automatically. reputation -> ${rep + 1}\n`);
@@ -124,13 +124,13 @@ async function tick(user: User) {
 async function main() {
   attachContract();
   if (SIM) {
-    console.log("Quid agent — SIM MODE (no chain / Plaid / x402 calls).");
+    console.log("Quid agent - SIM MODE (no chain / Plaid / x402 calls).");
     console.log("Fill .env (QUID_CONTRACT_HASH + keys) to go live.\n");
     await runSimCycle();
     console.log("\nRe-run with `npm run dev`. Full picture: docs/Quid-user-flows.md");
     return;
   }
-  console.log("Quid agent — LIVE. Watching", users.length, "user(s).");
+  console.log("Quid agent - LIVE. Watching", users.length, "user(s).");
   setInterval(() => {
     for (const u of users) tick(u).catch((e) => console.error(`[${u.id}]`, e));
   }, POLL_MS);

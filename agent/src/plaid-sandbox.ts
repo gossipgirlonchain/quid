@@ -18,7 +18,7 @@ const SANDBOX_USER = "user_transactions_dynamic";
 
 function client(): PlaidApi {
   if (!process.env.PLAID_CLIENT_ID || !process.env.PLAID_SECRET) {
-    throw new Error("PLAID_CLIENT_ID / PLAID_SECRET missing — paste your Sandbox keys into agent/.env first");
+    throw new Error("PLAID_CLIENT_ID / PLAID_SECRET missing - paste your Sandbox keys into agent/.env first");
   }
   return new PlaidApi(
     new Configuration({
@@ -72,7 +72,7 @@ async function main() {
     }
     process.stdout.write(".");
     await new Promise((r) => setTimeout(r, 10_000));
-    if (i === 11) console.log("\n  streams not ready yet — the loop will still work once Plaid finishes the pull");
+    if (i === 11) console.log("\n  streams not ready yet - the loop will still work once Plaid finishes the pull");
   }
 
   upsertEnv("PLAID_ACCESS_TOKEN", accessToken);

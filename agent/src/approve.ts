@@ -1,5 +1,5 @@
 // Borrower onboarding (chain side): grant the pool a standing allowance on the
-// stablecoin so the agent can auto-repay advances as income lands — the
+// stablecoin so the agent can auto-repay advances as income lands - the
 // pre-approval the contract's repay_advance expects. In the consumer app the
 // user's CSPR.click wallet signs this once during onboarding.
 //
@@ -20,7 +20,7 @@ const PAYMENT_MOTES = 5_000_000_000;
 
 async function main() {
   if (SIM) {
-    throw new Error("approve needs live mode — set QUID_CONTRACT_HASH in .env (see contracts/DEPLOY.md)");
+    throw new Error("approve needs live mode - set QUID_CONTRACT_HASH in .env (see contracts/DEPLOY.md)");
   }
   const amountUsd = Number(process.argv[2] ?? 5_000);
   if (!Number.isFinite(amountUsd) || amountUsd <= 0) {
@@ -51,7 +51,7 @@ async function main() {
   const hash = String(res.transactionHash.toHex?.() ?? res.transactionHash);
   console.log(`  submitted: https://testnet.cspr.live/transaction/${hash}`);
   await waitForSettlement(hash);
-  console.log("  finalized ✓ — the agent can now auto-repay up to the allowance");
+  console.log("  finalized ✓ - the agent can now auto-repay up to the allowance");
 }
 
 main().catch((e) => {

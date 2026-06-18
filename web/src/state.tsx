@@ -89,6 +89,19 @@ interface QuidState {
   install: boolean;
   showInstall: () => void;
   hideInstall: () => void;
+
+  /** User's profile photo (data URL), persisted locally. */
+  avatarUrl: string | null;
+  setAvatar: (dataUrl: string) => void;
+}
+
+const AVATAR_KEY = "quid.avatar";
+function loadAvatar(): string | null {
+  try {
+    return localStorage.getItem(AVATAR_KEY);
+  } catch {
+    return null;
+  }
 }
 
 const Ctx = createContext<QuidState | null>(null);
@@ -109,6 +122,7 @@ export function QuidProvider({ children }: { children: ReactNode }) {
   const [score, setScore] = useState(642);
   const [push, setPush] = useState<PushMsg | null>(null);
   const [install, setInstall] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(loadAvatar);
 
   const value = useMemo<QuidState>(() => {
     const go = (s: Screen) => setScreen(s);
@@ -145,8 +159,17 @@ export function QuidProvider({ children }: { children: ReactNode }) {
       install,
       showInstall: () => setInstall(true),
       hideInstall: () => setInstall(false),
+      avatarUrl,
+      setAvatar: (dataUrl: string) => {
+        setAvatarUrl(dataUrl);
+        try {
+          localStorage.setItem(AVATAR_KEY, dataUrl);
+        } catch {
+          /* quota / private mode -> stays in memory for the session */
+        }
+      },
     };
-  }, [screen, auto, cap, borrow, chosen, sheetOpen, score, push, install]);
+  }, [screen, auto, cap, borrow, chosen, sheetOpen, score, push, install, avatarUrl]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

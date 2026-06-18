@@ -1,7 +1,7 @@
-# Quid — Product & Stack Breakdown
+# Quid - Product & Stack Breakdown
 
 A self-contained reference for the product, the agent, the stack, and the on-chain
-proof — written so it can be handed to a writer (or another AI) to produce a demo
+proof - written so it can be handed to a writer (or another AI) to produce a demo
 video script, a pitch, or a deck. Built for the Casper Agentic Buildathon 2026.
 
 - **Live app:** https://app.quid.fund
@@ -13,35 +13,35 @@ video script, a pitch, or a deck. Built for the Casper Agentic Buildathon 2026.
 ## 1. One-liner
 
 A personal money agent on Casper that covers you before payday and repays itself
-when you're paid — building an on-chain reputation that makes every advance cheaper.
+when you're paid - building an on-chain reputation that makes every advance cheaper.
 
 ## 2. The problem
 
-Millions live paycheck-to-paycheck and come up short a few days *before* payday —
+Millions live paycheck-to-paycheck and come up short a few days *before* payday -
 rent hits on the 28th, wages land on the 30th. Today's fixes (payday lenders,
 earned-wage-access apps like Earnin / DailyPay) are centralized black boxes: opaque
 fees, and the trust you build is trapped inside one company. Your good repayment
 history is worth nothing anywhere else.
 
-## 3. The solution — an agent, not an app
+## 3. The solution - an agent, not an app
 
 Quid is an **autonomous money agent**. It holds its *own* Casper wallet, watches
-your cash flow, and acts on your behalf. The person doesn't "use a lending app" —
+your cash flow, and acts on your behalf. The person doesn't "use a lending app" -
 they have an agent that quietly handles the gap. The agent is the protagonist; the
 human just benefits.
 
-## 4. How it works — the loop
+## 4. How it works - the loop
 
 The agent runs **perceive → verify → decide → act → settle**:
 
-1. **Perceive** — reads balance, recurring bills, and income via Plaid; projects
+1. **Perceive** - reads balance, recurring bills, and income via Plaid; projects
    whether you'll go short before payday.
-2. **Verify** — pays per-call over **x402** to verify the income it would lend against.
-3. **Decide** — computes a *safe* advance = **min(plan cap, what your next paycheck
+2. **Verify** - pays per-call over **x402** to verify the income it would lend against.
+3. **Decide** - computes a *safe* advance = **min(plan cap, what your next paycheck
    can comfortably repay)**. Critically, it **declines** rather than over-lend.
-4. **Act** — signs `issue_advance` from its own wallet; CEP-18 stablecoin (dUSDC)
+4. **Act** - signs `issue_advance` from its own wallet; CEP-18 stablecoin (dUSDC)
    moves from the pool to your Casper wallet.
-5. **Settle** — when wages land, it `repay_advance`s itself automatically, and your
+5. **Settle** - when wages land, it `repay_advance`s itself automatically, and your
    **on-chain Quid score** rises → next advance is cheaper and your ceiling goes up.
 
 The decision math (real, in `agent/src/decision.ts`): income-based ceiling =
@@ -52,28 +52,33 @@ exceeds the safe ceiling or income can't be verified.
 
 - **Onboarding:** Welcome → pick a **username + social login** (CSPR.click silently
   creates a Casper wallet, no seed phrase) → **connect bank via Plaid** → **set how
-  much you might need** (slider: free up to $50; past that a paywall offers plans —
+  much you might need** (slider: free up to $50; past that a paywall offers plans -
   Free / Starter / Plus / Pro at $0 / $5 / $9 / $15, caps $50 / $100 / $250 / $500).
-- **Home:** a calm "You're covered — projected balance, payday in 5 days" card; an
+- **Home:** a calm "You're covered - projected balance, payday in 5 days" card; an
   **Auto-cover** toggle + cap slider; a "Need it now" button; demo-scenario buttons.
 - **The advance:** push notification *"you'll be short $180 on the 28th"* → tap →
   confirm sheet (**hold to confirm**) → a 3-step "working" animation (verify wages ·
   issue on Casper · release) → **Active**: *"your advance is ready in your Quid wallet."*
 - **Cash out:** "Cash out to bank" → the advance leaves the Casper wallet for the
-  linked bank (1–2 business days).
+  linked bank (1-2 business days). You don't have to cash out right away - a "View
+  wallet" button takes you to the wallet to decide later.
+- **Wallet:** the new home for what you hold and what you owe. **"You owe Quid
+  -$180.00"** front and center (repays 30 Jun, auto), plus what's "available to cash
+  out," your Casper wallet address, and an on-chain link. This is where the debt is
+  visible - the advance is real money you owe, repaid automatically on payday.
 - **Settle:** "wages landed, I repaid $184 automatically" → **Quid score springs up +18**.
-- **Auto-covered** (silent, no ask) and **Declined** (*"I won't cover $400 — your
+- **Auto-covered** (silent, no ask) and **Declined** (*"I won't cover $400 - your
   income can't repay that comfortably, and I'm not putting you in a hole. Borrow $150
   instead."*) outcome screens.
-- **Activity:** the on-chain lending log — each advance issue/repay with amounts and
+- **Activity:** the on-chain lending log - each advance issue/repay with amounts and
   the resulting score, read **straight from the QuidPool contract**, with "Verify on
   cspr.live."
-- **Profile:** Quid score (TRUSTED → 108 pts to PRIME), 7/7 on-time repayments,
+- **Profile:** a settable **profile photo** (tap the avatar to upload one), Quid score (TRUSTED → 108 pts to PRIME), 7/7 on-time repayments,
   $1,420 advanced lifetime, plan, bank + Casper wallet + "Add funds" (Ramp on-ramp).
 
 ## 6. What's real + on-chain proof
 
-Deployed, seeded, and exercised on **Casper Testnet** — every transaction is real
+Deployed, seeded, and exercised on **Casper Testnet** - every transaction is real
 and verifiable:
 
 - **QuidPool contract** `hash-ccdd94c7…ce34` (Odra / Rust): CEP-18 pull/push/pull-back,
@@ -88,7 +93,7 @@ and verifiable:
   [issue](https://testnet.cspr.live/transaction/2512cb6b34cdd54e0d441b7f177839cc8642d6ba3dc3d32d1deb735967b3047c) →
   [repay](https://testnet.cspr.live/transaction/c00d1366334f2302001921b71ce6228ef9e5f89e2a4b5299759f6626af9af3f0)
 - The live app's **Activity feed shows 6 real contract events**, decoded from the
-  chain over JSON-RPC. The agent **declined** an over-ceiling ask in the live loop —
+  chain over JSON-RPC. The agent **declined** an over-ceiling ask in the live loop -
   real autonomous judgment, not a script.
 
 ## 7. The stack
@@ -99,7 +104,7 @@ and verifiable:
 | Stablecoin | **CEP-18** (dUSDC) | What the pool lends |
 | Agent + backend | **Node / TypeScript**, `casper-js-sdk` v5, Plaid SDK | The loop: Plaid signals, x402, risk decisioning, Casper signing |
 | App | **React 18 + Vite 6 + Tailwind 4** (PWA) | The consumer app at app.quid.fund (neobrutalist design) |
-| API | **Vercel serverless** (`api/`) | Plaid, Stripe, on/off-ramp, on-chain activity, users — mirrors the agent backend |
+| API | **Vercel serverless** (`api/`) | Plaid, Stripe, on/off-ramp, on-chain activity, users - mirrors the agent backend |
 | Users / DB | **Supabase** (Postgres) | Username signup + per-user profile / Plaid token |
 | Login + wallet | **CSPR.click** | Social login → silent self-custodial Casper wallet |
 | Bank + income | **Plaid** (Sandbox) | Balance, recurring income, transactions |
@@ -113,16 +118,16 @@ and verifiable:
 - **Real:** the contract, agent-signed advances/repayments, the autonomous decision
   loop, Plaid Sandbox signals, the on-chain Activity feed, signup/users, the Ramp on-ramp.
 - **Scaffolded** (mock fallback, live when keyed): CSPR.click silent wallet, x402
-  verification, Stripe billing, and the cash-out off-ramp (simulated ACH — there's no
+  verification, Stripe billing, and the cash-out off-ramp (simulated ACH - there's no
   turnkey Casper→fiat provider yet; roadmap is a payout provider like Coinflow).
 
 ## 9. Why Casper / what's novel
 
-- **Reputation as a first-class on-chain asset** — Quid scores are CES events on the
+- **Reputation as a first-class on-chain asset** - Quid scores are CES events on the
   contract, *portable* across any app that reads them (vs. trapped in one company's DB).
-- **Agent-owned wallet** — the agent signs its own advances/repayments; the contract
+- **Agent-owned wallet** - the agent signs its own advances/repayments; the contract
   enforces that only the pool admin (the agent) can issue/repay.
-- **x402 two-way** — the agent *pays* to verify income, and could *earn* by selling
+- **x402 two-way** - the agent *pays* to verify income, and could *earn* by selling
   its reputation oracle to other agents (B2B revenue).
 
 ## 10. Facts & numbers (for the script)
@@ -132,7 +137,7 @@ and verifiable:
   advance: **$104.50**. Free-tier cap: **$50**.
 - Quid score in the demo: **642 → 660** (+18 on repay); profile shows "TRUSTED,
   108 pts to PRIME, 7/7 on-time, $1,420 lifetime."
-- Closing line: *"Your money, handled — before payday. Built on Casper."*
+- Closing line: *"Your money, handled - before payday. Built on Casper."*
 
 ## 11. Suggested narrative arc (~2 min)
 
@@ -143,4 +148,4 @@ up** → it also knows when to say no (declined) → Activity feed = the chain �
 the product.
 
 **Voice:** calm, plain-spoken, first-person ("I covered you"). Quid is a steady,
-trustworthy agent — not hypey. End on the product, not the tech.
+trustworthy agent - not hypey. End on the product, not the tech.

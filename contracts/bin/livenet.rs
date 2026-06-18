@@ -14,7 +14,7 @@
 //!   QUID_STABLECOIN_ADDRESS=hash-... \
 //!   cargo run --release --features livenet --bin quid_contracts_livenet
 //!
-//! On success it prints the deployed QuidPool address — put it in agent/.env as
+//! On success it prints the deployed QuidPool address - put it in agent/.env as
 //! QUID_CONTRACT_HASH. The deploying key becomes the pool admin (the agent wallet).
 
 use odra::host::Deployer;

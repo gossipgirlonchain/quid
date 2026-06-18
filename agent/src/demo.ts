@@ -5,7 +5,7 @@
 //   repay_advance  agent               (income landed; pool made whole, reputation +1)
 //
 // The borrower is a separate wallet (generated on first run, gassed by the agent
-// with a native CSPR transfer) — same shape as a real user's CSPR.click wallet.
+// with a native CSPR transfer) - same shape as a real user's CSPR.click wallet.
 // Every step waits for on-chain finality and prints a cspr.live link; the advance
 // id is read back from the AdvanceIssued event, so reruns just work.
 //
@@ -64,7 +64,7 @@ async function csprBalance(
 
 async function main() {
   if (SIM) {
-    throw new Error("demo needs live mode — set QUID_CONTRACT_HASH in .env (see contracts/DEPLOY.md)");
+    throw new Error("demo needs live mode - set QUID_CONTRACT_HASH in .env (see contracts/DEPLOY.md)");
   }
   const token = process.env.QUID_STABLECOIN_ADDRESS!;
   const pool = process.env.QUID_CONTRACT_HASH!;
@@ -81,7 +81,7 @@ async function main() {
 
   // 0) Gas the borrower (first run only): native CSPR transfer from the agent.
   if ((await csprBalance(rpc, borrower.publicKey)) < 5_000_000_000n) {
-    console.log(`— gas the borrower (${GAS_CSPR} CSPR from the agent) —`);
+    console.log(`- gas the borrower (${GAS_CSPR} CSPR from the agent) -`);
     const tx = new NativeTransferBuilder()
       .from(agent.publicKey)
       .target(borrower.publicKey)
@@ -99,16 +99,16 @@ async function main() {
   }
 
   // 1) Agent issues the advance: pool pushes $180 dUSDC to the borrower.
-  console.log(`— issue_advance: $${ADVANCE_USD} to the borrower —`);
+  console.log(`- issue_advance: $${ADVANCE_USD} to the borrower -`);
   const dueDate = Math.floor(Date.now() / 1000) + 7 * 86_400;
   const issueHash = await issueAdvance(borrowerHex, ADVANCE_USD, dueDate);
   console.log(`  submitted: ${link(issueHash)}`);
   await waitForSettlement(issueHash);
   const advanceId = await advanceIdFromIssueTx(issueHash);
-  console.log(`  finalized ✓ — advance id ${advanceId} (from the AdvanceIssued event), borrower holds the stablecoin\n`);
+  console.log(`  finalized ✓ - advance id ${advanceId} (from the AdvanceIssued event), borrower holds the stablecoin\n`);
 
   // 2) Borrower approves the pool to pull repayment (a real user's wallet signs this).
-  console.log("— borrower approves the pool for repayment —");
+  console.log("- borrower approves the pool for repayment -");
   const approveArgs = Args.fromMap({
     spender: CLValue.newCLKey(Key.newKey(pool)),
     amount: CLValue.newCLUInt256(toUnits(ADVANCE_USD)),
@@ -129,11 +129,11 @@ async function main() {
   console.log("  finalized ✓\n");
 
   // 3) Income landed -> agent settles. Pool pulls the $180 back, reputation +1.
-  console.log(`— repay_advance(${advanceId}) —`);
+  console.log(`- repay_advance(${advanceId}) -`);
   const repayHash = await repayAdvance(advanceId);
   console.log(`  submitted: ${link(repayHash)}`);
   await waitForSettlement(repayHash);
-  console.log("  finalized ✓ — pool made whole, AdvanceRepaid event carries new_reputation\n");
+  console.log("  finalized ✓ - pool made whole, AdvanceRepaid event carries new_reputation\n");
 
   console.log("Full advance lifecycle on Casper Testnet:");
   console.log(`  issue:  ${link(issueHash)}`);

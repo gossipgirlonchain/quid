@@ -7,12 +7,12 @@ only step that needs your keys is the actual on-chain deploy. This is that step.
 
 1. **A funded Casper Testnet account.** The repo's funded agent keypair lives at
    `agent/keys/`:
-   - `agent/keys/secret_key.pem` — the signer (pool admin = the agent's wallet)
+   - `agent/keys/secret_key.pem` - the signer (pool admin = the agent's wallet)
    - public key `019884e5b44325f7a75468129ccc4adbbdf1171ace5a64c2cd82fa99b69209aced`
      (funded with 1000 CSPR from the Testnet faucet)
 2. **A CEP-18 stablecoin address on Testnet** (the `hash-…` of the token the pool
    lends in). Use an existing dUSDC / csprUSD token, or deploy your own test CEP-18
-   with the included bin — see "Deploy a test stablecoin" below.
+   with the included bin - see "Deploy a test stablecoin" below.
 
 ## 1. Build the wasm
 
@@ -82,7 +82,7 @@ seeded liquidity and the agent can issue advances.
 ### Deploy a test stablecoin (optional)
 
 If you don't have a Testnet CEP-18 to point at, deploy Odra's `Cep18` with the included
-bin (`bin/livenet_cep18.rs` — 1,000,000 dUSDC, 6 decimals, supply minted to the deployer):
+bin (`bin/livenet_cep18.rs` - 1,000,000 dUSDC, 6 decimals, supply minted to the deployer):
 
 ```bash
 cd contracts

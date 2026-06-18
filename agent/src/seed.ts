@@ -20,7 +20,7 @@ async function main() {
   attachContract();
 
   if (SIM) {
-    console.log("SIM mode (QUID_CONTRACT_HASH unset) — logging the calls only.\n");
+    console.log("SIM mode (QUID_CONTRACT_HASH unset) - logging the calls only.\n");
     await approveStablecoin("hash-token", "hash-pool", amountUsd);
     await fundPool(amountUsd);
     return;

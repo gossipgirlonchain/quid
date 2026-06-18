@@ -1,20 +1,20 @@
-# Quid × WiseLending — liquidity & yield integration sketch
+# Quid × WiseLending - liquidity & yield integration sketch
 
 **Status: design sketch (post-MVP).** The MVP runs on a single seeded pool
 (`fund_pool`, already implemented + tested). WiseLending is the yield/liquidity
 layer that makes idle float productive. This doc is the integration plan, not yet
-built — it needs WiseLending's Testnet contract address + entrypoint ABI to wire.
+built - it needs WiseLending's Testnet contract address + entrypoint ABI to wire.
 
 ## The split: Quid = credit, WiseLending = yield
 
 - **QuidPool keeps the credit risk.** The income-based advance is *uncollateralized*
-  — secured only by verified pending wages. WiseLending is *collateralized* lending
+  - secured only by verified pending wages. WiseLending is *collateralized* lending
   and cannot underwrite that. So the underwriting, the reputation, and the default
   risk stay entirely in QuidPool.
 - **WiseLending earns on idle float.** Between advances, pooled stablecoin sits idle.
   Parking it in WiseLending earns variable APY; Quid withdraws on demand to fund a new
   advance. Per the economics in the brief, an advance is outstanding ~5 days, so most
-  of the pool is idle most of the time — that's the float WiseLending should be earning on.
+  of the pool is idle most of the time - that's the float WiseLending should be earning on.
 
 ## Liquidity model
 

@@ -1,9 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { ScreenShell } from "../components/Shell";
 import { Avatar, Card, Divider, H1, Kicker, Money, Row, Tag, Toggle } from "../components/ui";
 import { cn } from "../lib/cn";
 import { useQuid } from "../state";
 import { openOnRamp } from "../lib/ramps";
+import { fileToAvatarDataUrl } from "../lib/image";
 
 function SetRow({
   label,
@@ -37,18 +38,36 @@ function SetRow({
 const chev = <span className="text-[22px] leading-none text-muted">›</span>;
 
 export function Profile() {
-  const { go, score, auto, cap } = useQuid();
+  const { go, score, auto, cap, avatarUrl, setAvatar } = useQuid();
   const [scoreInfo, setScoreInfo] = useState(false);
   const [alerts, setAlerts] = useState(true);
   const [receipts, setReceipts] = useState(true);
   const [faceId, setFaceId] = useState(true);
+  const photoInput = useRef<HTMLInputElement>(null);
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setAvatar(await fileToAvatarDataUrl(file));
+    e.target.value = ""; // allow re-picking the same file
+  };
 
   return (
     <ScreenShell>
       <div className="mt-2 flex items-center gap-3.5">
-        <Avatar size={56} className="rounded-[16px]">
-          W
-        </Avatar>
+        <button
+          type="button"
+          onClick={() => photoInput.current?.click()}
+          aria-label="Change profile photo"
+          className="relative rounded-[16px] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+        >
+          <Avatar size={56} className="rounded-[16px]" src={avatarUrl ?? undefined}>
+            W
+          </Avatar>
+          <span className="absolute -bottom-1.5 -right-1.5 grid h-7 w-7 place-items-center rounded-full border-[3px] border-ink bg-quid text-[12px]">
+            ✎
+          </span>
+        </button>
+        <input ref={photoInput} type="file" accept="image/*" className="hidden" onChange={onPhoto} />
         <div>
           <H1 className="text-[24px]">Winny</H1>
           <div className="font-mono text-[12px] text-muted">@winny · since Apr 2026</div>

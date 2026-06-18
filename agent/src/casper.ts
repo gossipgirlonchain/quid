@@ -109,7 +109,7 @@ export async function repayAdvance(advanceId: number): Promise<string> {
   return callContract(poolHash(), "repay_advance", args);
 }
 
-/** Seed liquidity into the pool (after approving it as a spender — see below). */
+/** Seed liquidity into the pool (after approving it as a spender - see below). */
 export async function fundPool(amountUsd: number): Promise<string> {
   if (SIM) {
     const hash = simHash();

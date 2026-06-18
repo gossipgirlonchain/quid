@@ -105,19 +105,21 @@ export function Avatar({
   tone = "quid",
   size = 40,
   pulse = false,
+  src,
   className,
   children = "Q",
 }: {
   tone?: Tone;
   size?: number;
   pulse?: boolean;
+  src?: string;
   className?: string;
   children?: ReactNode;
 }) {
   return (
     <div
       className={cn(
-        "relative grid flex-none place-items-center rounded-xl border-[3px] border-ink font-disp font-extrabold text-ink",
+        "relative grid flex-none place-items-center overflow-hidden rounded-xl border-[3px] border-ink font-disp font-extrabold text-ink",
         tone === "quid" && "bg-quid",
         tone === "coral" && "bg-coral text-white",
         tone === "sun" && "bg-sun text-white",
@@ -125,7 +127,7 @@ export function Avatar({
       )}
       style={{ width: size, height: size, fontSize: Math.round(size * 0.5) }}
     >
-      {children}
+      {src ? <img src={src} alt="" className="h-full w-full object-cover" /> : children}
       {pulse && (
         <span className="pointer-events-none absolute -inset-[3px] rounded-[14px] border-[3px] border-ink opacity-0 animate-[pulse-ring_1.8s_ease-out_infinite]" />
       )}

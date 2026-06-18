@@ -1,4 +1,4 @@
-# Consumer integrations — CSPR.click, Plaid Link, Stripe
+# Consumer integrations - CSPR.click, Plaid Link, Stripe
 
 All three onboarding integrations are wired with **mock-first fallbacks**: with no keys the
 flow is fully clickable (demo mode); add keys and the same code paths go live. The web app
@@ -8,16 +8,16 @@ proxies `/api` to it.
 ## Run it
 
 ```bash
-# terminal 1 — backend (Plaid + Stripe). Mock until you fill agent/.env.
+# terminal 1 - backend (Plaid + Stripe). Mock until you fill agent/.env.
 cd agent && npm run server
 
-# terminal 2 — web app
+# terminal 2 - web app
 cd web && npm run dev          # http://localhost:5173
 ```
 
 `GET /api/health` reports whether Plaid and Stripe are `live` or `mock`.
 
-## 1. CSPR.click — login + silent wallet
+## 1. CSPR.click - login + silent wallet
 
 Client-side. The login screen calls `useAuth().login()` ([src/lib/integrations.ts](src/lib/integrations.ts)).
 
@@ -33,14 +33,14 @@ Client-side. The login screen calls `useAuth().login()` ([src/lib/integrations.t
   ```
   See [docs.cspr.click](https://docs.cspr.click/).
 
-## 2. Plaid Link — connect bank
+## 2. Plaid Link - connect bank
 
 Backend mints a Link token; the client opens Plaid Link; the public token is exchanged for an access token server-side ([usePlaidConnect](src/lib/integrations.ts)).
 
 - **Mock (default):** `/api/plaid/link-token` returns `{ link_token: null }`; "Connect with Plaid" just advances.
-- **Live:** set `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV=sandbox` in `agent/.env`. The real Link modal opens; on success `/api/plaid/exchange` stores the access token (wire the `TODO` there to your user store — the agent reads it for cashflow/income).
+- **Live:** set `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV=sandbox` in `agent/.env`. The real Link modal opens; on success `/api/plaid/exchange` stores the access token (wire the `TODO` there to your user store - the agent reads it for cashflow/income).
 
-## 3. Stripe — the $50 paywall
+## 3. Stripe - the $50 paywall
 
 When the borrow slider passes $50, "Subscribe & continue" calls `startCheckout(tier)`, which hits `/api/stripe/checkout` and redirects to Stripe Checkout.
 

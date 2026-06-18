@@ -2,7 +2,7 @@
   "name": "quid",
   "version": "0.1.0",
   "private": true,
-  "description": "Quid — an autonomous money agent on Casper. Web app (web/), agent + backend (agent/), Odra contracts (contracts/). Root package serves the Vercel deploy: api/ functions + the web build.",
+  "description": "Quid - an autonomous money agent on Casper. Web app (web/), agent + backend (agent/), Odra contracts (contracts/). Root package serves the Vercel deploy: api/ functions + the web build.",
   "type": "module",
   "scripts": {
     "build": "npm --prefix web install && npm --prefix web run build"
