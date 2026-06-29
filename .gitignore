@@ -1,6 +1,5 @@
-# node
-node_modules
-node_modules.nosync/
+# node (node_modules* also catches iCloud conflict-renames like "node_modules 2")
+node_modules*
 dist/
 .env
 .env.*
