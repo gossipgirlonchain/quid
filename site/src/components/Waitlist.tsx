@@ -3,20 +3,40 @@ import { useState, type FormEvent } from "react";
 export default function Waitlist() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError(true);
       return;
     }
-    try {
-      localStorage.setItem("quid-waitlist-email", email);
-    } catch {
-      /* storage unavailable, carry on */
-    }
     setError(false);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.status === 422) {
+        // Server rejected the address as invalid.
+        setSubmitting(false);
+        setError(true);
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+    } catch {
+      // Endpoint absent or down (e.g. local `npm run dev`): keep a local backup
+      // so the email isn't lost, and still complete the flow.
+      try {
+        localStorage.setItem("quid-waitlist-email", email);
+      } catch {
+        /* storage unavailable, carry on */
+      }
+    }
+    setSubmitting(false);
     setDone(true);
   };
 
@@ -62,11 +82,16 @@ export default function Waitlist() {
                 required
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="input sm:flex-1"
+                disabled={submitting}
+                className="input sm:flex-1 disabled:opacity-60"
                 onChange={() => setError(false)}
               />
-              <button type="submit" className="btn btn-ink shrink-0">
-                Get early access
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn btn-ink shrink-0 disabled:opacity-70"
+              >
+                {submitting ? "Adding you..." : "Get early access"}
               </button>
             </form>
             {error && (

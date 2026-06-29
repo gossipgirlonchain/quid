@@ -37,7 +37,16 @@ Then point the `quid.fund` domain at the deployment in the host's domain setting
 
 ## Waitlist form
 
-The "Get early access" form is a front-end stub: it validates the address, shows the success state, and keeps the email in `localStorage`. When you have a real endpoint (Formspree, Buttondown, your own API), wire it up in `src/components/Waitlist.tsx` inside `submit`.
+The "Get early access" form POSTs to `/api/waitlist` ([api/waitlist.ts](api/waitlist.ts)), a Vercel serverless function that upserts the email into the `waitlist` table in the project's Supabase database via PostgREST. The Supabase key is held server-side and never reaches the browser; duplicate emails are idempotent.
+
+To make it write to Supabase in production, set these env vars on the `quidsite` Vercel project (Settings -> Environment Variables):
+
+- `SUPABASE_URL` - `https://wtehcopktelnnpeyticf.supabase.co`
+- `SUPABASE_SERVICE_KEY` - the **service_role** key from Supabase -> Project Settings -> API (server-only, bypasses RLS)
+
+Without those vars the function returns a mock OK, so the form still completes. In local `npm run dev` there is no function running, so the form falls back to storing the email in `localStorage` and still shows the success state. To exercise the real function locally, run `vercel dev` instead.
+
+Read the collected emails any time with: `select email, created_at from waitlist order by created_at desc;`
 
 ## Where things live
 
