@@ -31,7 +31,7 @@ export default function Nav() {
           </nav>
           <div className="flex items-center gap-2">
             <a
-              href="/demo.html"
+              href="https://app.quid.fund"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-ghost btn-sm hidden sm:inline-flex"

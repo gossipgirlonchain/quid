@@ -25,7 +25,12 @@ export default function Hero() {
             <a href="#waitlist" className="btn btn-primary">
               Get early access
             </a>
-            <a href="/demo.html" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+            <a
+              href="https://app.quid.fund"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
               Try the demo
             </a>
           </div>
