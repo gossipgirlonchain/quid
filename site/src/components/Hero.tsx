@@ -25,8 +25,8 @@ export default function Hero() {
             <a href="#waitlist" className="btn btn-primary">
               Get early access
             </a>
-            <a href="#how" className="btn btn-ghost">
-              See how it works
+            <a href="/demo.html" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+              Try the demo
             </a>
           </div>
           <p className="font-mono font-bold text-[12px] text-muted rise-in" style={at(160)}>

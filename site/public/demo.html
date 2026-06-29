@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FF70B7">
+<title>Quid - interactive demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* navy / pink / indigo palette - pink fills take ink text, navy and indigo fills take white text */
+    --paper:#F1F2F2; --ink:#070E36; --quid:#FF70B7; --quid-deep:#C81E78; --coral:#070E36;
+    --sun:#545D93; --sky:#545D93; --surface:#FFFFFF; --muted:#545D93;
+    --disp:"Unbounded",sans-serif; --body:"Hanken Grotesk",sans-serif; --mono:"Space Mono",monospace;
+    --bd:3px solid var(--ink); --sh:6px 6px 0 var(--ink); --sh-sm:4px 4px 0 var(--ink);
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--body); background:#E9E3D2; color:var(--ink);
+    -webkit-font-smoothing:antialiased; display:flex; align-items:center; justify-content:center;
+    min-height:100dvh; padding:24px; gap:28px; flex-wrap:wrap;
+  }
+  body{background-color:#D9DADF}
+  .tabular{font-variant-numeric:tabular-nums}
+  .mono{font-family:var(--mono)}
+  /* phone frame */
+  .phone{
+    width:390px; height:780px; background:var(--paper); border:4px solid var(--ink);
+    border-radius:36px; box-shadow:10px 10px 0 var(--ink); position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .notch{position:absolute; top:10px; left:50%; transform:translateX(-50%); width:120px; height:22px; background:var(--ink); border-radius:0 0 14px 14px; z-index:40}
+  .statusbar{height:44px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 22px 4px; font-family:var(--mono); font-size:12px; font-weight:700}
+  .appbar{display:flex; align-items:center; justify-content:space-between; padding:6px 18px 12px; border-bottom:var(--bd); background:var(--paper); z-index:30}
+  .wordmark{font-family:var(--disp); font-weight:800; font-size:23px; letter-spacing:-.02em}
+  .scorechip{display:inline-flex; align-items:center; gap:7px; border:var(--bd); border-radius:999px; box-shadow:var(--sh-sm); background:var(--quid); padding:5px 13px; font-family:var(--mono); font-weight:700; font-size:13px; cursor:pointer; transition:transform .12s ease-out, box-shadow .12s ease-out}
+  .scorechip:active{transform:translate(2px,2px); box-shadow:0 0 0 var(--ink)}
+  .scorechip .st{font-size:10px; letter-spacing:.06em}
+  .screen-wrap{flex:1; position:relative; overflow:hidden}
+  .screen{position:absolute; inset:0; padding:14px 18px 84px; overflow-y:auto; display:none; flex-direction:column; gap:14px}
+  .screen.active{display:flex; animation:fade .26s ease-out}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  .screen::-webkit-scrollbar{width:0}
+  /* type */
+  .kicker{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+  h1{font-family:var(--disp); font-weight:700; font-size:26px; line-height:1.08; text-wrap:balance; letter-spacing:-.02em}
+  h2{font-family:var(--disp); font-weight:700; font-size:18px; line-height:1.1; letter-spacing:-.01em}
+  p{text-wrap:pretty; line-height:1.45}
+  .big{font-family:var(--disp); font-weight:800; font-size:42px; line-height:1; letter-spacing:-.03em}
+  /* surfaces */
+  .card{background:var(--surface); border:var(--bd); border-radius:16px; box-shadow:var(--sh); padding:18px}
+  .card.flat{box-shadow:none}
+  .agent{display:flex; gap:11px; align-items:flex-start}
+  .av{flex:0 0 40px; width:40px; height:40px; border:var(--bd); border-radius:12px; background:var(--quid); color:var(--ink); display:grid; place-items:center; font-family:var(--disp); font-weight:800; font-size:20px}
+  .av.coral{background:var(--coral); color:#fff} .av.sun{background:var(--sun); color:#fff}
+  .pulse{position:relative}
+  .pulse::after{content:""; position:absolute; inset:-3px; border-radius:14px; border:3px solid var(--ink); opacity:0; animation:pl 1.8s ease-out infinite}
+  @keyframes pl{0%{opacity:.5; transform:scale(1)} 100%{opacity:0; transform:scale(1.35)}}
+  .livedot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--ink); margin-right:2px; vertical-align:middle; animation:blinkdot 1.6s ease-in-out infinite}
+  @keyframes blinkdot{0%,100%{opacity:1} 50%{opacity:.2}}
+  .tag{display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; font-weight:700; border:2px solid var(--ink); border-radius:999px; padding:4px 10px; background:var(--paper); color:var(--ink)}
+  .tag.g{background:var(--quid)} .tag.c{background:var(--coral); color:#fff} .tag.s{background:var(--sun); color:#fff}
+  .row{display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .divide{height:2px; background:var(--ink); opacity:.12; margin:4px 0}
+  .muted{color:var(--muted)}
+  /* buttons */
+  .btn{font-family:var(--body); font-weight:700; font-size:16px; border:var(--bd); border-radius:12px; box-shadow:var(--sh-sm); background:var(--surface); padding:14px 16px; cursor:pointer; width:100%; transition:transform .12s ease-out, box-shadow .12s ease-out; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px}
+  .btn:active{transform:translate(3px,3px); box-shadow:0 0 0 var(--ink)}
+  .btn.primary{background:var(--quid)} .btn.coral{background:var(--coral); color:#fff} .btn.ghost{box-shadow:none; background:transparent}
+  .btn.sm{font-size:14px; padding:10px 12px; min-height:40px; box-shadow:var(--sh-sm)}
+  .info{display:inline-flex; width:24px; height:24px; border:2px solid var(--ink); border-radius:999px; align-items:center; justify-content:center; font-family:var(--mono); font-size:13px; font-weight:700; font-style:normal; background:var(--paper); color:var(--ink); cursor:pointer; vertical-align:middle; margin-left:7px; padding:0}
+  .info:active{transform:translate(1px,1px)}
+  .infobox{font-size:13px; color:var(--muted); line-height:1.45; padding:10px 0 2px; text-wrap:pretty}
+  .cap{-webkit-appearance:none; appearance:none; width:100%; background:transparent; cursor:pointer; margin:6px 0}
+  .cap::-webkit-slider-runnable-track{height:16px; border:var(--bd); border-radius:999px; background:var(--surface)}
+  .cap::-moz-range-track{height:16px; border:var(--bd); border-radius:999px; background:var(--surface)}
+  .cap::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; height:30px; width:30px; margin-top:-10px; border:var(--bd); border-radius:999px; background:var(--quid); box-shadow:var(--sh-sm)}
+  .cap::-moz-range-thumb{height:28px; width:28px; border:var(--bd); border-radius:999px; background:var(--quid); box-shadow:var(--sh-sm)}
+  .cap:focus{outline:none}
+  .set-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px}
+  .set-row .lbl{font-weight:600}
+  .set-row .sub{font-size:12px; color:var(--muted); font-family:var(--mono); margin-top:2px}
+  .chev{font-size:22px; color:var(--muted); line-height:1}
+  .bar{height:16px; border:var(--bd); border-radius:999px; background:var(--surface); overflow:hidden}
+  .bar > i{display:block; height:100%; background:var(--quid); border-right:3px solid var(--ink)}
+  .tog{flex:0 0 52px; width:52px; height:30px; border:var(--bd); border-radius:999px; background:var(--quid); position:relative; cursor:pointer; transition:background .15s}
+  .tog .knob{position:absolute; top:2px; left:24px; width:22px; height:22px; border:2px solid var(--ink); border-radius:999px; background:#fff; transition:left .15s}
+  .tog.off{background:var(--paper)} .tog.off .knob{left:2px}
+  /* push + install banners */
+  .pushbar{position:absolute; top:48px; left:12px; right:12px; z-index:60; background:var(--surface); border:var(--bd); border-radius:16px; box-shadow:var(--sh); padding:12px 14px; display:flex; gap:11px; align-items:flex-start; cursor:pointer; transform:translateY(-180%); transition:transform .3s ease-out}
+  .pushbar.show{transform:translateY(0)}
+  .installbar{position:absolute; left:12px; right:12px; bottom:84px; z-index:55; background:var(--ink); color:#fff; border:var(--bd); border-radius:16px; box-shadow:var(--sh); padding:11px 12px; display:none; gap:10px; align-items:center; justify-content:space-between}
+  .installbar.show{display:flex}
+  /* bottom nav */
+  .nav{position:absolute; left:0; right:0; bottom:0; height:72px; background:var(--paper); border-top:var(--bd); display:flex; padding-bottom:env(safe-area-inset-bottom)}
+  .nav button{flex:1; background:none; border:none; cursor:pointer; font-family:var(--body); font-weight:600; font-size:11px; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:4px; padding-top:12px}
+  .nav button .dot{width:8px; height:8px; border:2px solid var(--muted); border-radius:3px}
+  .nav button.on{color:var(--ink)} .nav button.on .dot{background:var(--quid); border-color:var(--ink)}
+  /* sheet */
+  .sheet-bg{position:absolute; inset:0; background:rgba(7,14,54,.5); z-index:50; display:none; align-items:flex-end; animation:fade .2s ease-out}
+  .sheet-bg.show{display:flex}
+  .sheet{width:100%; background:var(--paper); border-top:4px solid var(--ink); border-radius:24px 24px 0 0; padding:22px 18px calc(22px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:14px; animation:up .28s ease-out}
+  @keyframes up{from{transform:translateY(100%)} to{transform:none}}
+  .grab{width:48px; height:5px; border-radius:3px; background:var(--ink); opacity:.25; margin:0 auto 4px}
+  /* progress steps */
+  .step{display:flex; gap:11px; align-items:center; padding:10px 0; opacity:.4; transition:opacity .3s}
+  .step.done,.step.now{opacity:1}
+  .step .ck{width:26px; height:26px; border:var(--bd); border-radius:8px; display:grid; place-items:center; font-family:var(--mono); font-weight:700; font-size:13px; flex:0 0 26px}
+  .step.done .ck{background:var(--quid)} .step.now .ck{background:var(--sun); color:#fff; animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{background:var(--ink)}}
+  .link{font-family:var(--mono); font-size:12px; text-decoration:underline; word-break:break-all}
+  .hint{text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted); width:100%; flex-basis:100%}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+  @media (max-width:480px){body{padding:0; background:var(--paper)} .phone{width:100vw; height:100dvh; border:none; border-radius:0; box-shadow:none} .notch{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ PHONE ============ -->
+<div class="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span></span><span>100%</span></div>
+  <div class="appbar" id="appbar">
+    <span class="wordmark">Quid</span>
+    <span class="scorechip" onclick="go('s-profile')"><span class="st">QUID SCORE</span> <b class="tabular" id="topScore">642</b></span>
+  </div>
+
+  <div class="screen-wrap">
+
+    <!-- WELCOME -->
+    <section class="screen active" id="s-welcome">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:18px; text-align:center">
+        <div class="av" style="width:64px; height:64px; flex:0 0 64px; border-radius:18px; font-size:32px; margin:0 auto">Q</div>
+        <h1 style="font-size:26px">Money before payday, handled for you.</h1>
+        <p style="font-size:16px">Quid watches your cash flow and quietly covers you when you're short, then pays itself back the moment you're paid.</p>
+      </div>
+      <button class="btn primary" onclick="go('s-login')">Get started</button>
+      <button class="btn ghost" onclick="go('s-login')">I already have an account</button>
+    </section>
+
+    <!-- LOGIN -->
+    <section class="screen" id="s-login">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:14px; text-align:center">
+        <div class="kicker">Step 1 of 3</div>
+        <h1 style="font-size:23px">Create your account</h1>
+        <p>No seed phrases, no wallet setup. Sign in and Quid creates a secure Casper wallet for you behind the scenes.</p>
+        <div style="height:6px"></div>
+        <button class="btn" onclick="go('s-connect')"> Continue with Apple</button>
+        <button class="btn" onclick="go('s-connect')"> Continue with Google</button>
+        <button class="btn ghost" onclick="go('s-connect')">Use email instead</button>
+      </div>
+      <p class="hint">Secured by CSPR.click. Your wallet is self-custodial.</p>
+    </section>
+
+    <!-- CONNECT BANK -->
+    <section class="screen" id="s-connect">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:14px; text-align:center">
+        <div class="kicker">Step 2 of 3</div>
+        <h1 style="font-size:23px">Connect your bank</h1>
+        <p>So I can spot when you're heading short and verify the income I lend against. Read-only, I can't move money in your bank.</p>
+        <div class="card flat" style="border-style:dashed">
+          <div class="row"><span style="font-weight:600">🔒 Bank-grade, read-only</span><span class="tag mono">PLAID</span></div>
+        </div>
+      </div>
+      <button class="btn primary" onclick="go('s-setborrow')">Connect with Plaid</button>
+      <p class="hint">Powered by Plaid. Quid never sees your bank login.</p>
+    </section>
+
+    <!-- SET BORROW -->
+    <section class="screen" id="s-setborrow" style="text-align:center">
+      <div class="kicker" style="margin-top:6px">Step 3 of 3</div>
+      <h1 style="font-size:21px">How much might you need before payday?</h1>
+      <div class="big tabular" id="sbAmt" style="margin:6px 0">$50</div>
+      <input type="range" class="cap" id="sbSlider" min="0" max="500" value="50" step="10" oninput="setBorrow(this.value)" aria-label="Expected borrowing">
+      <div class="row"><span class="mono muted" style="font-size:11px">$0</span><span class="mono" style="font-size:11px" id="sbPlanNote">Free plan</span></div>
+      <div id="sbPaywall" hidden>
+        <div class="card" style="background:var(--sun); color:#fff">
+          <div class="kicker" style="color:#fff">Unlock higher limits</div>
+          <p style="font-weight:600; font-size:15px; margin-top:4px" id="sbPlanLine">Borrow up to $250 with Plus, $9/mo.</p>
+          <div class="divide" style="background:#fff; opacity:.3"></div>
+          <div class="row" style="padding:3px 0"><span class="mono" style="font-size:12px">Free</span><span class="mono" style="font-size:12px">up to $50</span></div>
+          <div class="row" style="padding:3px 0"><span class="mono" style="font-size:12px">Starter · $5/mo</span><span class="mono" style="font-size:12px">up to $100</span></div>
+          <div class="row" style="padding:3px 0"><span class="mono" style="font-size:12px">Plus · $9/mo</span><span class="mono" style="font-size:12px">up to $250</span></div>
+          <div class="row" style="padding:3px 0"><span class="mono" style="font-size:12px">Pro · $15/mo</span><span class="mono" style="font-size:12px">up to $500</span></div>
+        </div>
+      </div>
+      <button class="btn primary" id="sbBtn" onclick="finishOnboarding()">Continue free</button>
+      <p class="hint">No fees per advance, ever. Just your plan.</p>
+    </section>
+
+    <!-- HOME -->
+    <section class="screen" id="s-home">
+      <div class="card" style="background:var(--quid); margin-top:6px">
+        <div class="kicker" style="color:var(--ink)">You're covered</div>
+        <div class="big tabular" style="margin:8px 0 4px">$312.40</div>
+        <p class="mono" style="font-size:13px; font-weight:700">Projected balance · payday in 5 days</p>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <h2>Auto-cover <button class="info" onclick="toggleInfo()" aria-label="About auto-cover">i</button></h2>
+          <div id="homeTog" onclick="toggleAuto()" style="flex:0 0 58px; width:58px; height:34px; border:var(--bd); border-radius:999px; background:var(--quid); position:relative; cursor:pointer; transition:background .15s">
+            <div id="homeKnob" style="position:absolute; top:2px; left:26px; width:26px; height:26px; border:2px solid var(--ink); border-radius:999px; background:#fff; transition:left .15s"></div>
+          </div>
+        </div>
+        <div id="acInfo" class="infobox" hidden>If you'll go short, I cover it up to your cap and pay myself back on payday. No need to ask.</div>
+        <div class="divide"></div>
+        <div class="row"><span class="muted" style="font-size:13px">Cover up to</span><span class="big tabular" style="font-size:30px" id="homeCap">$200</span></div>
+        <input type="range" class="cap" id="capSlider" min="50" max="250" value="200" step="10" oninput="setCap(this.value)" aria-label="Auto-cover limit">
+        <div class="row">
+          <span class="mono muted" style="font-size:11px">$50</span>
+          <span class="mono" style="font-size:11px" id="ceilNote">Plus plan, up to $250</span>
+        </div>
+      </div>
+
+      <button class="btn coral" onclick="needNow()">Need it now</button>
+
+      <div class="kicker" style="margin-top:8px">DEMO: Try a scenario</div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <button class="btn ghost sm" onclick="pushShortfall()">🔔 Notify: heading short (ask first)</button>
+        <button class="btn ghost sm" onclick="pushAutocover()">🔔 Notify: auto-covered (silent)</button>
+        <button class="btn ghost sm" onclick="go('s-declined')">Agent declines an advance</button>
+        <button class="btn ghost sm" onclick="showInstall()">Add to home screen prompt</button>
+      </div>
+    </section>
+
+    <!-- HEADS UP -->
+    <section class="screen" id="s-heads">
+      <div class="tag c" style="align-self:flex-start; margin-top:2px">● HEADS-UP · PUSH NOTIFICATION</div>
+      <div class="card" style="background:var(--coral); color:#fff; border-color:var(--ink)">
+        <div class="agent">
+          <div class="av pulse">Q</div>
+          <div>
+            <div class="kicker" style="color:#fff">Quid · just now</div>
+            <p style="font-weight:600; font-size:15px; color:#fff">Heads up. Your landlord pulls rent on the <b>28th</b>, two days before your wages land.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <p style="font-size:15px">You'll be short by</p>
+        <div class="big tabular" style="color:var(--quid-deep); margin:6px 0">$180.00</div>
+        <p>I can advance it now and repay myself the moment your wages arrive on the 30th.</p>
+        <div class="divide"></div>
+        <div class="row" style="padding:4px 0"><span class="muted">Fee</span><span class="mono" style="font-weight:700; color:var(--quid-deep)">$0 · Plus plan</span></div>
+        <div class="row" style="padding:4px 0"><span class="muted">Secured against</span><span class="mono">verified wages</span></div>
+      </div>
+      <button class="btn coral" onclick="openSheet()">Advance $180 →</button>
+      <button class="btn ghost" onclick="go('s-home')">Not now</button>
+      <p class="hint">First one's on approval. Switch on auto-cover and I'll handle the next without asking.</p>
+    </section>
+
+    <!-- WORKING -->
+    <section class="screen" id="s-work">
+      <div class="tag s" style="align-self:flex-start; margin-top:2px">● QUID IS WORKING</div>
+      <div class="card" style="background:var(--sun); color:#fff">
+        <div class="agent"><div class="av pulse">Q</div>
+          <div><div class="kicker" style="color:#fff">On it</div>
+          <p style="font-weight:600; font-size:15px">Sorting your advance. This takes a few seconds.</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="step" id="w1"><div class="ck">1</div><div><b>Verifying your wages</b><div class="mono muted" style="font-size:11px">x402 · paid API call</div></div></div>
+        <div class="step" id="w2"><div class="ck">2</div><div><b>Issuing advance on Casper</b><div class="mono muted" style="font-size:11px">Odra contract · Testnet</div></div></div>
+        <div class="step" id="w3"><div class="ck">3</div><div><b>Releasing $180 to you</b><div class="mono muted" style="font-size:11px">CSPR → your wallet</div></div></div>
+        <div class="divide"></div>
+        <div class="mono" style="font-size:11px" id="txline">tx: <span class="muted">pending…</span></div>
+      </div>
+    </section>
+
+    <!-- ACTIVE -->
+    <section class="screen" id="s-active">
+      <div class="tag g" style="align-self:flex-start; margin-top:2px">● ADVANCE ACTIVE</div>
+      <div class="card">
+        <div class="agent"><div class="av">Q</div>
+          <div><div class="kicker">Done</div><p style="font-weight:600; font-size:15px">Sent. <span id="actSent">$180</span> is in your account. I'll pay myself back on the 30th.</p></div>
+        </div>
+        <div class="big tabular" id="actAmt" style="margin:14px 0 2px">$180.00</div>
+        <div class="row" style="margin-top:8px"><span class="muted">Repay</span><span class="mono">30 Jun · auto</span></div>
+        <div class="row" style="padding-top:6px"><span class="muted">Fee</span><span class="mono" id="actFee" style="color:var(--quid-deep)">$0 · Plus</span></div>
+        <div class="row" style="padding-top:6px"><span class="muted">On-chain</span><span class="link">0x7a3f…c91 ↗</span></div>
+      </div>
+      <button class="btn primary" onclick="settle()">▶ Simulate: wages land</button>
+      <p class="hint">Fast-forward to repayment</p>
+    </section>
+
+    <!-- SETTLED -->
+    <section class="screen" id="s-settled">
+      <div class="tag g" style="align-self:flex-start; margin-top:2px">● SETTLED</div>
+      <div class="card" style="background:var(--quid)">
+        <div class="agent"><div class="av pulse">Q</div>
+          <div><div class="kicker" style="color:var(--ink)">All square</div><p style="font-weight:600; font-size:15px">Your wages landed. I paid back <span id="setTotal">$184</span> automatically. Nothing for you to do.</p></div>
+        </div>
+        <div class="big tabular" id="scoreNum" style="margin:14px 0 2px">Quid score 642</div>
+        <div class="row" style="margin-top:6px"><span style="font-weight:600">▲ Up 18 points</span><span class="mono">next advance: cheaper</span></div>
+      </div>
+      <div class="card flat" style="border-style:dashed">
+        <p class="muted" style="font-size:14px">Every advance you repay builds your on-chain Quid score, so the agent trusts you more and your fees fall over time.</p>
+      </div>
+      <button class="btn" onclick="go('s-home')">Back to home</button>
+    </section>
+
+    <!-- AUTO-COVERED (silent) -->
+    <section class="screen" id="s-autocover">
+      <div class="tag g" style="align-self:flex-start; margin-top:4px"><span class="livedot"></span>AUTO-COVERED</div>
+      <div class="card" style="background:var(--quid)">
+        <div class="agent"><div class="av">Q</div>
+          <div><div class="kicker" style="color:var(--ink)">Handled</div>
+          <p style="font-weight:600; font-size:15px">You were about to go short, so I covered it. You didn't have to do a thing.</p></div>
+        </div>
+        <div class="big tabular" style="margin:14px 0 2px">$120.00</div>
+        <div class="row" style="margin-top:6px"><span>Repays</span><span class="mono">30 Jun · auto</span></div>
+        <div class="row" style="padding-top:6px"><span>Why</span><span class="mono" style="font-size:12px">under your $200 cap</span></div>
+        <div class="row" style="padding-top:6px"><span>On-chain</span><span class="link">0x9c2e…4af ↗</span></div>
+      </div>
+      <div class="card flat" style="border-style:dashed"><p class="muted" style="font-size:13px">This is auto-cover working. Switch it off in Home to be asked first every time instead.</p></div>
+      <button class="btn" onclick="go('s-home')">Got it</button>
+    </section>
+
+    <!-- DECLINED -->
+    <section class="screen" id="s-declined">
+      <div class="tag c" style="align-self:flex-start; margin-top:4px">● NOT THIS TIME</div>
+      <div class="card">
+        <div class="agent"><div class="av coral">Q</div>
+          <div><div class="kicker">Quid</div>
+          <p style="font-weight:600; font-size:15px">I won't cover $400 this time. Your verified income can't repay that comfortably by payday, and I'm not going to put you in a hole.</p></div>
+        </div>
+        <div class="divide"></div>
+        <div class="row"><span class="muted">You asked for</span><span class="mono tabular">$400</span></div>
+        <div class="row" style="padding-top:6px"><span class="muted">Safe right now</span><span class="mono tabular" style="font-weight:700; color:var(--quid-deep)">$150</span></div>
+      </div>
+      <button class="btn primary" onclick="openSheet(150)">Borrow $150 instead</button>
+      <button class="btn ghost" onclick="go('s-home')">Not now</button>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section class="screen" id="s-activity">
+      <h1 style="margin-top:6px">Activity</h1>
+      <p class="muted" style="margin-top:-6px">Everything Quid did, on the record.</p>
+      <div class="card" style="padding:0">
+        <div class="row" style="padding:14px 16px"><div><b>Repaid advance</b><div class="mono muted" style="font-size:11px">30 Jun 09:02 · 0x7a3f…c91</div></div><span class="mono tabular" style="font-weight:700; color:var(--quid-deep)">−$184</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="row" style="padding:14px 16px"><div><b>Issued advance</b><div class="mono muted" style="font-size:11px">28 Jun 08:40 · Casper Testnet</div></div><span class="mono tabular" style="font-weight:700">+$180</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="row" style="padding:14px 16px"><div><b>Verified wages</b><div class="mono muted" style="font-size:11px">28 Jun 08:39 · x402 · $0.01</div></div><span class="tag mono">x402</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="row" style="padding:14px 16px"><div><b>Spotted shortfall</b><div class="mono muted" style="font-size:11px">28 Jun 08:39 · −$180 projected</div></div><span class="tag c mono">ALERT</span></div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="screen" id="s-profile">
+      <div style="display:flex; gap:14px; align-items:center; margin-top:8px">
+        <div class="av" style="width:56px; height:56px; flex:0 0 56px; border-radius:16px; font-size:26px">W</div>
+        <div>
+          <h1 style="font-size:24px">Winny</h1>
+          <div class="mono muted" style="font-size:12px">@winny · since Apr 2026</div>
+        </div>
+      </div>
+
+      <!-- Quid score hero -->
+      <div class="card" style="background:var(--sun); color:#fff">
+        <div class="row"><div class="kicker" style="color:#fff">Quid score</div><span class="tag" style="background:var(--paper)">TRUSTED</span></div>
+        <div class="big tabular" style="margin:6px 0 12px">642</div>
+        <div class="bar"><i style="width:46%"></i></div>
+        <div class="row" style="margin-top:8px"><span class="mono" style="font-size:11px; font-weight:700">TRUSTED</span><span class="mono" style="font-size:11px">108 pts to PRIME</span></div>
+        <div class="divide"></div>
+        <p style="font-size:13px">Reach <b>Prime</b> to unlock lower fees (1.5%) and a higher ceiling ($600). <button class="info" onclick="toggleScoreInfo()" aria-label="How the score works">i</button></p>
+        <div id="scoreInfo" class="infobox" style="color:var(--paper)" hidden>Your score rises every time you repay an advance on time, recorded on-chain. Higher score means cheaper fees and a bigger safe ceiling.</div>
+      </div>
+
+      <!-- stats -->
+      <div class="card" style="padding:0">
+        <div class="set-row"><span class="lbl">On-time repayments</span><span class="mono tabular" style="font-weight:700; color:var(--quid-deep)">7 / 7</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row"><span class="lbl">Advanced lifetime</span><span class="mono tabular" style="font-weight:700">$1,420</span></div>
+      </div>
+
+      <div class="kicker" style="margin-top:8px">Plan</div>
+      <div class="card" style="padding:0">
+        <div class="set-row"><div><div class="lbl">Plus</div><div class="sub">$9/mo · borrow up to $250</div></div><span class="tag g" style="font-size:10px">CURRENT</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><div><div class="lbl">Pro</div><div class="sub">$15/mo · up to $500</div></div><span class="chev">›</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><div><div class="lbl muted">Starter</div><div class="sub">$5/mo · up to $100</div></div><span class="chev">›</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><div><div class="lbl muted">Free</div><div class="sub">$0 · up to $50</div></div><span class="chev">›</span></div>
+      </div>
+
+      <div class="kicker" style="margin-top:8px">Settings</div>
+      <div class="card" style="padding:0">
+        <div class="set-row" onclick="go('s-home')" style="cursor:pointer">
+          <div><div class="lbl">Auto-cover</div><div class="sub" id="profAutoVal">On · up to $250</div></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+
+      <!-- notifications -->
+      <div class="card" style="padding:0">
+        <div class="set-row"><div><div class="lbl">Shortfall alerts</div><div class="sub">Heads-up before you go short</div></div><div class="tog" onclick="flip(this)"><div class="knob"></div></div></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row"><div><div class="lbl">Repayment receipts</div><div class="sub">When I pay myself back</div></div><div class="tog" onclick="flip(this)"><div class="knob"></div></div></div>
+      </div>
+
+      <!-- connected accounts -->
+      <div class="card" style="padding:0">
+        <div class="set-row"><div><div class="lbl">Bank</div><div class="sub">Monzo · current account</div></div><span class="tag g" style="font-size:10px">CONNECTED</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><div><div class="lbl">Casper wallet</div><div class="sub">0x7a3f…c91</div></div><span class="chev">›</span></div>
+      </div>
+
+      <!-- security & account -->
+      <div class="card" style="padding:0">
+        <div class="set-row"><div><div class="lbl">Face ID</div><div class="sub">Required to confirm advances</div></div><div class="tog" onclick="flip(this)"><div class="knob"></div></div></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><span class="lbl">Help & support</span><span class="chev">›</span></div>
+        <div class="divide" style="margin:0"></div>
+        <div class="set-row" style="cursor:pointer"><span class="lbl" style="color:var(--quid-deep)">Log out</span><span class="chev" style="color:var(--quid-deep)">›</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- PUSH NOTIFICATION -->
+  <div class="pushbar" id="pushbar" onclick="tapPush()">
+    <div class="av" style="width:34px; height:34px; flex:0 0 34px; border-radius:10px; font-size:17px">Q</div>
+    <div style="flex:1">
+      <div class="row" style="margin-bottom:2px"><span style="font-weight:700; font-size:13px">Quid</span><span class="mono muted" style="font-size:10px">now</span></div>
+      <p id="pushBody" style="font-size:13px; line-height:1.35">Notification</p>
+    </div>
+  </div>
+
+  <!-- INSTALL PROMPT -->
+  <div class="installbar" id="installbar">
+    <div style="display:flex; gap:10px; align-items:center">
+      <div class="av" style="width:30px; height:30px; flex:0 0 30px; border-radius:9px; font-size:15px">Q</div>
+      <div style="font-size:13px; font-weight:600">Add Quid to your home screen</div>
+    </div>
+    <div style="display:flex; gap:6px">
+      <button class="btn sm" style="width:auto; padding:7px 13px; background:var(--quid)" onclick="hideInstall()">Install</button>
+      <button class="btn sm ghost" style="width:auto; padding:7px 10px; color:#fff; box-shadow:none" onclick="hideInstall()">✕</button>
+    </div>
+  </div>
+
+  <!-- SHEET -->
+  <div class="sheet-bg" id="sheetbg">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>How much do you need?</h2>
+      <div class="big tabular" id="shAmt" style="font-size:46px; margin:2px 0">$180</div>
+      <input type="range" class="cap" id="shSlider" min="50" max="250" value="180" step="10" oninput="setSheet(this.value)" aria-label="Advance amount">
+      <div class="row"><span class="mono muted" style="font-size:11px">$50</span><span class="mono" style="font-size:11px" id="shCeil">Plus plan, up to $250</span></div>
+      <div class="card flat" style="border-radius:12px; margin-top:4px">
+        <div class="row" style="padding:5px 0"><span class="muted">Amount</span><span class="mono tabular" style="font-weight:700" id="shAmtRow">$180.00</span></div>
+        <div class="row" style="padding:5px 0"><span class="muted">Fee</span><span class="mono" style="font-weight:700; color:var(--quid-deep)" id="shFee">$0 · Plus plan</span></div>
+        <div class="row" style="padding:5px 0"><span class="muted">Repay 30 Jun</span><span class="mono tabular" style="font-weight:700" id="shTotal">$180.00</span></div>
+        <div class="divide"></div>
+        <div class="row" style="padding:5px 0"><span class="muted">Secured against</span><span class="mono">wages · verified</span></div>
+      </div>
+      <p class="mono muted" style="font-size:11px">Repaid automatically the moment your wages land. This is the only step that moves money.</p>
+      <button class="btn coral" id="shBtn" onclick="confirmAdvance()">Hold to confirm · Advance $180</button>
+      <button class="btn ghost" onclick="closeSheet()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <button class="on" id="n-home" onclick="go('s-home')"><span class="dot"></span>Home</button>
+    <button id="n-activity" onclick="go('s-activity')"><span class="dot"></span>Activity</button>
+    <button id="n-profile" onclick="go('s-profile')"><span class="dot"></span>Profile</button>
+  </nav>
+</div>
+
+<p class="hint" style="max-width:360px; align-self:center; color:var(--ink)">Clickable prototype · neobrutalist · PWA-ready. Start on Home and tap the simulate button to walk the agent's full flow.</p>
+
+<script>
+  const navMap={'s-home':'n-home','s-activity':'n-activity','s-profile':'n-profile'};
+  const onboarding=['s-welcome','s-login','s-connect','s-setborrow'];
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const el=document.getElementById(id); el.classList.add('active');
+    const onb=onboarding.includes(id);
+    document.getElementById('appbar').style.display=onb?'none':'flex';
+    document.getElementById('nav').style.display=onb?'none':'flex';
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    if(navMap[id]) document.getElementById(navMap[id]).classList.add('on');
+    el.scrollTop=0;
+  }
+  function setBorrow(v){
+    v=+v;
+    document.getElementById('sbAmt').textContent='$'+v;
+    let note, pay=false, line='';
+    if(v<=50){note='Free plan'}
+    else if(v<=100){note='Starter · $5/mo'; pay=true; line='Borrow up to $100 with Starter, $5/mo.'}
+    else if(v<=250){note='Plus · $9/mo'; pay=true; line='Borrow up to $250 with Plus, $9/mo.'}
+    else{note='Pro · $15/mo'; pay=true; line='Borrow up to $500 with Pro, $15/mo.'}
+    const n=document.getElementById('sbPlanNote');
+    n.textContent=note; n.style.color=pay?'var(--ink)':'var(--muted)';
+    document.getElementById('sbPaywall').hidden=!pay;
+    if(pay) document.getElementById('sbPlanLine').textContent=line;
+    document.getElementById('sbBtn').textContent=pay?'Subscribe & continue':'Continue free';
+  }
+  function finishOnboarding(){go('s-home')}
+  let pushTarget=null;
+  function showPush(body, target){
+    pushTarget=target;
+    document.getElementById('pushBody').textContent=body;
+    const b=document.getElementById('pushbar'); b.classList.add('show');
+    clearTimeout(window._pt); window._pt=setTimeout(()=>b.classList.remove('show'), 5000);
+  }
+  function tapPush(){document.getElementById('pushbar').classList.remove('show'); if(pushTarget) go(pushTarget)}
+  function pushShortfall(){showPush("Heads up, you'll be $180 short on the 28th. Tap to review.", 's-heads')}
+  function pushAutocover(){showPush("I covered you. $120 sent, repays when you're paid.", 's-autocover')}
+  function showInstall(){document.getElementById('installbar').classList.add('show')}
+  function hideInstall(){document.getElementById('installbar').classList.remove('show')}
+  const money=n=>'$'+n.toFixed(2);
+  let chosen={amt:180, fee:4, total:184};
+  function openSheet(amt){
+    amt=amt||180;
+    document.getElementById('shSlider').value=amt;
+    setSheet(amt);
+    document.getElementById('sheetbg').classList.add('show');
+  }
+  function needNow(){openSheet(180)}
+  function setSheet(v){
+    v=+v;
+    chosen={amt:v, fee:0, total:v};
+    document.getElementById('shAmt').textContent='$'+v;
+    document.getElementById('shAmtRow').textContent=money(v);
+    document.getElementById('shTotal').textContent=money(v);
+    document.getElementById('shBtn').textContent='Hold to confirm · Advance $'+v;
+    const c=document.getElementById('shCeil');
+    if(v>=250){c.textContent="Upgrade to Pro to borrow more"; c.style.color='var(--quid-deep)'}
+    else{c.textContent='Plus plan, up to $250'; c.style.color='var(--muted)'}
+  }
+  function toggleInfo(){const b=document.getElementById('acInfo'); b.hidden=!b.hidden}
+  function toggleScoreInfo(){const b=document.getElementById('scoreInfo'); b.hidden=!b.hidden}
+  function flip(el){el.classList.toggle('off')}
+  function setCap(v){
+    document.getElementById('homeCap').textContent='$'+v;
+    const note=document.getElementById('ceilNote');
+    if(v>=250){note.textContent="Upgrade to Pro to go higher"; note.style.color='var(--quid-deep)'}
+    else{note.textContent='Plus plan, up to $250'; note.style.color='var(--muted)'}
+    updateProfAuto();
+  }
+  function updateProfAuto(){
+    const el=document.getElementById('profAutoVal');
+    if(el) el.textContent=(auto?'On':'Off')+' · up to '+document.getElementById('homeCap').textContent;
+  }
+  function closeSheet(){document.getElementById('sheetbg').classList.remove('show')}
+  function confirmAdvance(){
+    document.getElementById('actSent').textContent='$'+chosen.amt;
+    document.getElementById('actAmt').textContent=money(chosen.amt);
+    document.getElementById('setTotal').textContent='$'+chosen.total;
+    closeSheet(); go('s-work');
+    ['w1','w2','w3'].forEach(s=>{document.getElementById(s).classList.remove('done','now')});
+    const tx=document.getElementById('txline');
+    tx.innerHTML='tx: <span class="muted">pending…</span>';
+    setTimeout(()=>{document.getElementById('w1').classList.add('now')},150);
+    setTimeout(()=>{document.getElementById('w1').classList.replace('now','done');document.getElementById('w2').classList.add('now')},1300);
+    setTimeout(()=>{tx.innerHTML='tx: <span class="link">0x7a3f…c91 ↗</span>'},1900);
+    setTimeout(()=>{document.getElementById('w2').classList.replace('now','done');document.getElementById('w3').classList.add('now')},2500);
+    setTimeout(()=>{document.getElementById('w3').classList.replace('now','done')},3500);
+    setTimeout(()=>{go('s-active')},4200);
+  }
+  function settle(){
+    go('s-settled');
+    // spring-ish count up on the score
+    const el=document.getElementById('scoreNum'); const top=document.getElementById('topScore');
+    let v=642; const target=660;
+    const tick=()=>{v++; el.textContent='Quid score '+v; top.textContent=v; if(v<target) requestAnimationFrame(tick)};
+    setTimeout(tick,200);
+  }
+  let auto=true;
+  function toggleAuto(){
+    auto=!auto;
+    const t=document.getElementById('homeTog'), k=document.getElementById('homeKnob');
+    t.style.background=auto?'var(--quid)':'var(--paper)';
+    k.style.left=auto?'26px':'2px';
+    updateProfAuto();
+  }
+  // start in onboarding (hides app chrome)
+  go('s-welcome');
+</script>
+</body>
+</html>

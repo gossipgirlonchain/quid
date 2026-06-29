@@ -29,9 +29,19 @@ export default function Nav() {
               </a>
             ))}
           </nav>
-          <a href="#waitlist" className="btn btn-primary btn-sm">
-            Get early access
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href="/demo.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-sm hidden sm:inline-flex"
+            >
+              Try demo
+            </a>
+            <a href="#waitlist" className="btn btn-primary btn-sm">
+              Get early access
+            </a>
+          </div>
         </div>
       </div>
       <nav

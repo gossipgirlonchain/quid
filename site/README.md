@@ -48,6 +48,10 @@ Without those vars the function returns a mock OK, so the form still completes. 
 
 Read the collected emails any time with: `select email, created_at from waitlist order by created_at desc;`
 
+## Demo
+
+The "Try demo" buttons (nav + hero) open `/demo.html` in a new tab - a snapshot of the self-contained clickable prototype copied from `../web/quid-mockup.html` into `public/demo.html`. It deploys with the site, so it needs no separate app deployment. If the prototype changes, re-copy it: `cp ../web/quid-mockup.html public/demo.html`. To point "Try demo" at the full React app instead, change the two `/demo.html` hrefs in `Nav.tsx` and `Hero.tsx` to the app's URL.
+
 ## Where things live
 
 - `src/index.css` - design tokens (`@theme`) and the brutalist primitives (`.card`, `.btn`, `.tag`, the phone frame).
