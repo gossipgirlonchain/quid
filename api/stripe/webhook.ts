@@ -30,6 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log(`[stripe] webhook ${event.type}`);
     res.status(200).json({ received: true });
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${(err as Error).message}`);
+    console.error("[stripe] webhook verification failed:", err);
+    res.status(400).json({ error: "webhook_verification_failed" });
   }
 }

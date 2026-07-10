@@ -249,15 +249,15 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         console.log(`[stripe] webhook ${event.type}`);
         sendJson(res, 200, { received: true });
       } catch (err) {
-        res.writeHead(400, CORS);
-        res.end(`Webhook Error: ${(err as Error).message}`);
+        console.error("[stripe] webhook verification failed:", err);
+        sendJson(res, 400, { error: "webhook_verification_failed" });
       }
       return;
     }
 
     sendJson(res, 404, { error: "not_found" });
   } catch (err) {
-    console.error(`[server] ${method} ${url}`, err);
+    console.error("[server] request failed:", method, url, err);
     sendJson(res, 500, { error: "server_error" });
   }
 });
