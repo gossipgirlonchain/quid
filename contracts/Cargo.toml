@@ -8,7 +8,7 @@ description = "Quid advance pool + reputation contract for Casper (Odra)"
 # nightly-2026-01-01, matching odradev/odra @ 2.7.0). Build/test with cargo-odra:
 # `cargo install cargo-odra`, then `cargo odra build` / `cargo odra test`.
 [dependencies]
-odra = { version = "~2.7", default-features = false }
+odra = { version = "~2.8", default-features = false }
 odra-modules = { version = "~2.7", default-features = false }
 # Host-only RPC client for deploying to a live network (Testnet). Enabled by the
 # `livenet` feature; never pulled into the wasm build. See bin/livenet.rs + DEPLOY.md.
