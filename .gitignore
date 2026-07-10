@@ -6,8 +6,8 @@ dist/
 !.env.example
 
 # rust / odra (target is a *.nosync symlink locally - see the checklist's environment note)
-target
-target.nosync/
+# target* also catches iCloud conflict-renames like "target 2"
+target*
 *.nosync
 Cargo.lock
 *.wasm
