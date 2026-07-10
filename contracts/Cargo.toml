@@ -18,7 +18,7 @@ odra-casper-livenet-env = { version = "~2.7", optional = true }
 livenet = ["odra-casper-livenet-env"]
 
 [dev-dependencies]
-odra-test = "~2.7"
+odra-test = "~2.8"
 
 [build-dependencies]
 odra-build = "~2.7"
