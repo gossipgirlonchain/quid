@@ -21,11 +21,11 @@ livenet = ["odra-casper-livenet-env"]
 odra-test = "~2.7"
 
 [build-dependencies]
-odra-build = "~2.7"
+odra-build = "~2.8"
 
 # odra-build is also a (non-wasm) dependency, used by the build_schema binary.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-odra-build = "~2.7"
+odra-build = "~2.8"
 
 # Odra builds the wasm from this binary (its build model), not from a cdylib lib.
 [[bin]]
