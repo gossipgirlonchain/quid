@@ -1,9 +1,13 @@
 // Captures early-access emails into Supabase (table: public.waitlist) via
 // PostgREST. The service key is held server-side only and never reaches the
-// browser. Mirrors ../../api/users.ts. Degrades to a mock OK when the Supabase
-// env vars are absent, so the form still completes before config / in local dev.
+// browser. Degrades to a mock OK when the Supabase env vars are absent, so the
+// form still completes before config / in local dev.
+//
+// Edge runtime: this is a Web-standard (Request) => Response handler, so it must
+// run on "edge", not "nodejs" (a nodejs function expects an (req, res) signature
+// and an invalid runtime value fails the Vercel build for the whole project).
 
-export const config = { runtime: "nodejs" };
+export const config = { runtime: "edge" };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
