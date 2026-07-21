@@ -13,7 +13,7 @@ A personal money agent on Casper that covers you before payday and repays itself
 - **Live app:** https://app.quid.fund
 - **Landing:** https://quid.fund
 - **GitHub:** https://github.com/gossipgirlonchain/quid
-- **Demo video:** _(link)_
+- **Demo video:** https://www.youtube.com/shorts/FGolL0duPOk
 - **Deployed contract (cspr.live):** https://testnet.cspr.live/contract-package/ccdd94c7cf3b559906616f97c0d6624d97969ff5ca5cad7c8e749159ccd4ce34
 
 ## The problem

@@ -9,7 +9,7 @@ Built for the Casper Agentic Buildathon 2026.
 | 🟢 **Live app** | **https://app.quid.fund** |
 | 🌐 **Landing** | https://quid.fund |
 | 📦 **Repo** | https://github.com/gossipgirlonchain/quid |
-| 🎬 **Demo video** | _(link)_ |
+| 🎬 **Demo video** | https://www.youtube.com/shorts/FGolL0duPOk |
 
 ---
 
