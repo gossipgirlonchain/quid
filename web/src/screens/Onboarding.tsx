@@ -114,9 +114,9 @@ export function Connect() {
         </Card>
       </div>
       <Button variant="primary" onClick={connect}>
-        Connect with Plaid
+        Connect demo bank
       </Button>
-      <Hint>Powered by Plaid. Quid never sees your bank login.</Hint>
+      <Hint>Instant for this demo - the agent reads real Plaid Sandbox signals server-side.</Hint>
     </ScreenShell>
   );
 }

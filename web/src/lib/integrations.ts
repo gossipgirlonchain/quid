@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { usePlaidLink } from "react-plaid-link";
-import { currentUser, fetchPoolActivity, post, storePlaidToken } from "./api";
+import { fetchPoolActivity, post } from "./api";
 
 /** The most recent real advance issued by the QuidPool contract (for receipts in the UI). */
 export function useLatestAdvance() {
@@ -67,53 +66,14 @@ export async function authorizeRepayments(): Promise<{ ok: boolean; mock: boolea
 }
 
 /**
- * Bank connect via Plaid Link. Fetches a link token from the backend; if Plaid is
- * configured the real Link flow opens and we exchange the public token, otherwise
- * connect() just advances (demo). onDone fires when the step is complete either way.
+ * Bank connect. Onboarding attaches the demo bank instantly - the interactive
+ * Plaid Link sandbox flow (institution picker + dummy credentials) confused
+ * testers, so it's out of the signup path. The agent still reads real Plaid
+ * Sandbox signals server-side via its own token; the Link flow is in git
+ * history if a per-user bank item is ever needed again.
  */
 export function usePlaidConnect(onDone: () => void) {
-  const [token, setToken] = useState<string | null>(null);
-  const [live, setLive] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    post<{ link_token: string | null }>("/plaid/link-token", { userId: "demo" })
-      .then((r) => {
-        if (cancelled) return;
-        if (r.link_token) {
-          setToken(r.link_token);
-          setLive(true);
-        }
-      })
-      .catch(() => {
-        /* backend down / no keys -> stay in mock mode */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const { open, ready } = usePlaidLink({
-    token,
-    onSuccess: (publicToken: string) => {
-      post<{ access_token?: string }>("/plaid/exchange", {
-        public_token: publicToken,
-        userId: currentUser()?.id, // persists the bank item on the user's profile
-      })
-        .then((r) => {
-          if (r.access_token) storePlaidToken(r.access_token);
-        })
-        .catch(() => {})
-        .finally(onDone);
-    },
-  });
-
-  const connect = () => {
-    if (live && ready) open();
-    else onDone();
-  };
-
-  return { connect, live };
+  return { connect: onDone, live: false };
 }
 
 /**
