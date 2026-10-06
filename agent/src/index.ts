@@ -16,7 +16,7 @@ import {
   reputationOf,
   waitForSettlement,
   advanceIdFromIssueTx,
-} from "./casper.js";
+} from "./chain.js";
 import type { User } from "./types.js";
 
 // TODO: load real users from your store. One demo user here. The access token
