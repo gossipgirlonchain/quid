@@ -9,6 +9,7 @@
     "server": "tsx watch src/server.ts",
     "seed": "tsx src/seed.ts",
     "demo": "tsx src/demo.ts",
+    "demo:solana": "CHAIN=solana tsx src/solana-demo.ts",
     "approve": "tsx src/approve.ts",
     "plaid:sandbox": "tsx src/plaid-sandbox.ts",
     "typecheck": "tsc --noEmit"

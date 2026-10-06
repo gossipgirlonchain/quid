@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "test": "anchor test --validator legacy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "idl:sync": "cp target/idl/quid_pool.json target/types/quid_pool.ts ../agent/src/idl/",
+    "deploy:devnet": "anchor deploy --provider.cluster devnet"
   },
   "dependencies": {
     "@anchor-lang/core": "^1.2.0",
