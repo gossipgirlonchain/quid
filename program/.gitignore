@@ -1,0 +1,4 @@
+# Program builds should be reproducible: keep the lockfile (the repo root ignores it for Odra).
+!Cargo.lock
+.anchor
+test-ledger
